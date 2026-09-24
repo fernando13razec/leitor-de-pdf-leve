@@ -101,6 +101,11 @@ python ferramentas/gerar_executavel.py          # gera dist/PDF Leve/ e o .zip d
 
 A organização do código está descrita em [docs/arquitetura.md](docs/arquitetura.md).
 
+**Lançar uma versão:** atualize `VERSAO` em `pdf_leve/configuracao/constantes.py`, faça o commit e
+envie uma tag (`git tag v1.0.1 && git push origin v1.0.1`). O GitHub Actions testa, gera o
+executável e publica a Release. A assinatura de código está descrita em
+[docs/assinatura-de-codigo.md](docs/assinatura-de-codigo.md).
+
 ## Licença
 
 [MIT](LICENSE) © 2026 Fernando Santos

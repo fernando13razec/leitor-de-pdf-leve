@@ -2,7 +2,10 @@
 
 Como rodar (a partir da raiz do projeto, num ambiente com `pip install -r requirements-dev.txt`):
 
-    python ferramentas/gerar_executavel.py
+    python ferramentas/gerar_executavel.py                     # executável + zip
+    python ferramentas/gerar_executavel.py --etapa executavel  # só o executável
+    python ferramentas/gerar_executavel.py --etapa zip         # só o zip (ex.: depois de assinar o .exe)
+    python ferramentas/gerar_executavel.py --versao            # mostra a versão (usado no GitHub Actions)
 
 Resultado:
     dist/PDF Leve/PDF Leve.exe               programa (com a pasta _internal ao lado)
@@ -12,6 +15,7 @@ Usa o modo “pasta” (onedir) em vez de arquivo único: o programa inicia mais
 precisa se descompactar a cada abertura (nem nos processos auxiliares de renderização).
 """
 
+import argparse
 import hashlib
 import shutil
 import sys
@@ -93,8 +97,17 @@ def resumo():
 
 
 if __name__ == "__main__":
-    shutil.rmtree(PASTA_SAIDA / NOME_APLICATIVO, ignore_errors=True)
-    escrever_informacoes_de_versao()
-    gerar_executavel()
-    compactar()
-    resumo()
+    analisador = argparse.ArgumentParser(description="Gera o executável e o zip do PDF Leve.")
+    analisador.add_argument("--etapa", choices=["tudo", "executavel", "zip"], default="tudo")
+    analisador.add_argument("--versao", action="store_true", help="só mostra a versão e sai")
+    opcoes = analisador.parse_args()
+    if opcoes.versao:
+        print(VERSAO)
+        sys.exit()
+    if opcoes.etapa in ("tudo", "executavel"):
+        shutil.rmtree(PASTA_SAIDA / NOME_APLICATIVO, ignore_errors=True)
+        escrever_informacoes_de_versao()
+        gerar_executavel()
+    if opcoes.etapa in ("tudo", "zip"):
+        compactar()
+        resumo()
