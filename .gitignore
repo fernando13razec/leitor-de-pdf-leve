@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Empacotamento (PyInstaller)
+build/
+dist/
+*.spec
+
+# Editores e sistema
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
+
+# PDFs de teste locais (não versionar documentos reais)
+*.pdf
