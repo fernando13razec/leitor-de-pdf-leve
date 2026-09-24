@@ -3,7 +3,8 @@
 # - Ao enviar uma tag de versão (ex.: `git tag v1.0.1 && git push origin v1.0.1`): testa, gera o
 #   executável, assina (se a SignPath estiver configurada) e publica a Release com o zip.
 # - Manualmente (Actions → Release → Run workflow): só gera o executável e o disponibiliza como
-#   artefato da execução, sem publicar nada — útil para testar.
+#   artefato da execução, sem publicar nada. Marcando “rascunho”, testa também a publicação,
+#   criando uma Release em rascunho (visível só para quem administra o repositório).
 #
 # Assinatura digital (SignPath Foundation): fica desligada até as variáveis e o segredo abaixo
 # existirem no repositório (Settings → Secrets and variables → Actions). Veja
@@ -14,6 +15,11 @@ on:
   push:
     tags: ["v*"]
   workflow_dispatch:
+    inputs:
+      rascunho:
+        description: "Testar a publicação criando uma Release em rascunho"
+        type: boolean
+        default: false
 
 permissions:
   contents: write  # para criar a Release
@@ -66,7 +72,7 @@ jobs:
 
   publicar:
     needs: executavel
-    if: startsWith(github.ref, 'refs/tags/')
+    if: startsWith(github.ref, 'refs/tags/') || inputs.rascunho
     runs-on: windows-latest
     env:
       VERSAO: ${{ needs.executavel.outputs.versao }}
@@ -108,5 +114,11 @@ jobs:
         run: |
           sed "s/{VERSAO}/${VERSAO}/g" .github/notas_release.md > notas.md
           echo -e "\n**SHA-256** do zip: \`$(sha256sum "dist/PDF-Leve-${VERSAO}-windows-x64.zip" | cut -d' ' -f1)\`" >> notas.md
-          gh release create "${GITHUB_REF_NAME}" "dist/PDF-Leve-${VERSAO}-windows-x64.zip" \
-            --title "PDF Leve ${VERSAO}" --notes-file notas.md --generate-notes --verify-tag
+          ZIP="dist/PDF-Leve-${VERSAO}-windows-x64.zip"
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            gh release create "${GITHUB_REF_NAME}" "$ZIP" \
+              --title "PDF Leve ${VERSAO}" --notes-file notas.md --generate-notes --verify-tag
+          else
+            gh release create "teste-${GITHUB_RUN_ID}" "$ZIP" --draft --target "${GITHUB_SHA}" \
+              --title "PDF Leve ${VERSAO} (rascunho de teste)" --notes-file notas.md
+          fi
