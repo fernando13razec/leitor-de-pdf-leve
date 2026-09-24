@@ -1,3 +1,4 @@
 -r requirements.txt
 pillow>=10       # ferramentas/gerar_icone.py
 pyflakes>=3      # verificação estática
+pyinstaller>=6.10  # ferramentas/gerar_executavel.py

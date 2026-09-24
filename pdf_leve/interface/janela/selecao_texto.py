@@ -4,7 +4,7 @@ A seleção é um par de posições ((página, palavra), (página, palavra)) na 
 arrastou; `faixas_selecionadas` a normaliza em faixas de palavras por página.
 """
 
-import fitz  # PyMuPDF
+import pymupdf
 
 from pdf_leve.configuracao.constantes import LIMITE_CACHE_PALAVRAS
 from pdf_leve.configuracao.tema import COR_SELECAO_TEXTO_RGBA
@@ -59,9 +59,9 @@ class MixinSelecaoTexto:
                 continue
             rotacao = self.documento[pagina].rotation_matrix
             for linha in linhas_visuais(self.palavras_da_pagina(pagina)[primeira:ultima + 1]):
-                retangulo = fitz.Rect(linha[0][:4])
+                retangulo = pymupdf.Rect(linha[0][:4])
                 for palavra in linha[1:]:
-                    retangulo |= fitz.Rect(palavra[:4])
+                    retangulo |= pymupdf.Rect(palavra[:4])
                 x0, y0, x1, y1 = (round(v) for v in self.retangulo_na_tela(pagina, retangulo * rotacao))
                 tamanho = (max(1, x1 - x0), max(1, y1 - y0))
                 imagem = self._imagens_selecao.get(tamanho)

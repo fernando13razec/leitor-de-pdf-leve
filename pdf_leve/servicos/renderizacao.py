@@ -18,7 +18,7 @@ A chave é (id_documento, página, escala × 1000, versão da página).
 import multiprocessing
 import time
 
-import fitz  # PyMuPDF
+import pymupdf
 
 from pdf_leve.configuracao.constantes import RENDERIZACOES_ENTRE_LIMPEZAS
 
@@ -30,11 +30,11 @@ def aparar_deposito_mupdf():
     e o PyMuPDF não informa o tamanho desse depósito: ele é esvaziado a cada poucas páginas."""
     _contador_renderizacoes[0] += 1
     if _contador_renderizacoes[0] % RENDERIZACOES_ENTRE_LIMPEZAS == 0:
-        fitz.TOOLS.store_shrink(100)
+        pymupdf.TOOLS.store_shrink(100)
 
 
 def renderizar_pagina(pagina, escala):
-    return pagina.get_pixmap(matrix=fitz.Matrix(escala, escala), alpha=False)
+    return pagina.get_pixmap(matrix=pymupdf.Matrix(escala, escala), alpha=False)
 
 
 def processo_renderizador(conexao):
@@ -53,7 +53,7 @@ def processo_renderizador(conexao):
                 _, id_documento, caminho, senha = mensagem
                 if id_documento in documentos:
                     documentos.pop(id_documento).close()
-                documento = fitz.open(caminho)
+                documento = pymupdf.open(caminho)
                 if documento.needs_pass:
                     documento.authenticate(senha or "")
                 documentos[id_documento] = documento

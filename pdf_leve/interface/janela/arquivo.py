@@ -3,7 +3,7 @@
 import os
 from tkinter import filedialog, simpledialog
 
-import fitz  # PyMuPDF
+import pymupdf
 
 from pdf_leve.configuracao.constantes import NOME_APLICATIVO
 from pdf_leve.configuracao.preferencias import salvar_preferencias
@@ -34,7 +34,7 @@ class MixinArquivo:
     def carregar(self, caminho, ancora=None):
         """Abre o PDF nesta janela. `ancora` preserva a posição (usado ao recarregar)."""
         try:
-            documento = fitz.open(caminho)
+            documento = pymupdf.open(caminho)
         except Exception as erro:
             self.mostrar_erro(f"Não foi possível abrir o arquivo:\n{erro}")
             return
@@ -149,7 +149,7 @@ class MixinArquivo:
             self.mostrar_erro("Escolha outro nome: o arquivo aberto não pode ser substituído por este recorte.")
             return
         try:
-            novo = fitz.open()
+            novo = pymupdf.open()
             for inicio, fim in agrupar_sequencias(paginas):
                 novo.insert_pdf(self.documento, from_page=inicio, to_page=fim)
             novo.save(destino, garbage=3, deflate=True)

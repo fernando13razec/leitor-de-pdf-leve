@@ -4,7 +4,7 @@ import threading
 import unittest
 from pathlib import Path
 
-import fitz
+import pymupdf
 
 from pdf_leve.servicos.renderizacao import processo_renderizador
 
@@ -15,7 +15,7 @@ class TestesProcessoRenderizador(unittest.TestCase):
     def setUp(self):
         self.pasta = tempfile.TemporaryDirectory()
         self.caminho = str(Path(self.pasta.name) / "teste.pdf")
-        documento = fitz.open()
+        documento = pymupdf.open()
         documento.new_page(width=200, height=100).insert_text((20, 50), "Olá")
         documento.save(self.caminho)
         documento.close()

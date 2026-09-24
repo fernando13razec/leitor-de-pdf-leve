@@ -34,7 +34,14 @@ pip install -r requirements.txt
 python -m unittest discover -s testes -t . -v   # testes (devem passar antes de cada commit)
 pythonw iniciar.pyw arquivo.pdf                 # executar
 python ferramentas/gerar_icone.py               # regenerar ícones (requer Pillow)
+python ferramentas/gerar_executavel.py          # executável (PyInstaller, modo pasta) + zip em dist/
 ```
+
+## Versões e Releases
+
+A versão fica em `pdf_leve/configuracao/constantes.py` (`VERSAO`). Para lançar: atualize `VERSAO`,
+rode os testes, gere o executável num ambiente virtual limpo (`.venv` com `requirements-dev.txt`),
+teste o `dist/PDF Leve/PDF Leve.exe` e publique o zip com `gh release create v<versão>`.
 
 ## Cuidados
 

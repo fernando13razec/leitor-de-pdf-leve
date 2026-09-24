@@ -1,6 +1,6 @@
 import unittest
 
-import fitz
+import pymupdf
 
 from pdf_leve.servicos.texto import linha_da_palavra, linhas_visuais, palavra_mais_proxima, texto_das_palavras
 
@@ -30,9 +30,9 @@ class TestesTexto(unittest.TestCase):
         self.assertEqual(texto_das_palavras(PALAVRAS), "Conforme já aduzido\nEmbargada haver")
 
     def test_palavra_sob_o_ponto_e_mais_proxima(self):
-        self.assertEqual(palavra_mais_proxima(PALAVRAS, fitz.Point(65, 15), exata=True), 1)
-        self.assertIsNone(palavra_mais_proxima(PALAVRAS, fitz.Point(55, 15), exata=True))
-        self.assertEqual(palavra_mais_proxima(PALAVRAS, fitz.Point(200, 35)), 4)
+        self.assertEqual(palavra_mais_proxima(PALAVRAS, pymupdf.Point(65, 15), exata=True), 1)
+        self.assertIsNone(palavra_mais_proxima(PALAVRAS, pymupdf.Point(55, 15), exata=True))
+        self.assertEqual(palavra_mais_proxima(PALAVRAS, pymupdf.Point(200, 35)), 4)
 
     def test_linha_da_palavra(self):
         self.assertEqual(linha_da_palavra(PALAVRAS, 1), (0, 2))

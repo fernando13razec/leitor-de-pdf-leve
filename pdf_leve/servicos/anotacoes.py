@@ -6,11 +6,11 @@ o PDF guarda as anotações em coordenadas sem rotação.
 
 import re
 
-import fitz  # PyMuPDF
+import pymupdf
 
 from pdf_leve.configuracao.constantes import FONTE_ANOTACAO
 
-_fonte = fitz.Font(FONTE_ANOTACAO)
+_fonte = pymupdf.Font(FONTE_ANOTACAO)
 
 
 def hex_para_rgb(cor):
@@ -36,7 +36,7 @@ def encaixar_caixa_texto(pagina, x, y, texto, tamanho):
     limites = pagina.rect
     x = max(limites.x0, min(x, limites.x1 - largura))
     y = max(limites.y0, min(y, limites.y1 - altura))
-    return fitz.Rect(x, y, x + largura, y + altura)
+    return pymupdf.Rect(x, y, x + largura, y + altura)
 
 
 def retangulo_exibido(pagina, anotacao):
@@ -44,7 +44,7 @@ def retangulo_exibido(pagina, anotacao):
 
 
 def retangulo_sem_rotacao(pagina, retangulo):
-    return (fitz.Rect(retangulo) * pagina.derotation_matrix).normalize()
+    return (pymupdf.Rect(retangulo) * pagina.derotation_matrix).normalize()
 
 
 def criar_anotacao(pagina, retangulo, texto, cor, tamanho):
@@ -83,4 +83,4 @@ def ler_propriedades(documento, anotacao):
 
 
 def anotacoes_de_texto(pagina):
-    return pagina.annots(types=[fitz.PDF_ANNOT_FREE_TEXT])
+    return pagina.annots(types=[pymupdf.PDF_ANNOT_FREE_TEXT])

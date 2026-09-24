@@ -1,6 +1,6 @@
 import unittest
 
-import fitz
+import pymupdf
 
 from pdf_leve.servicos.anotacoes import (
     aplicar_anotacao, criar_anotacao, encaixar_caixa_texto, hex_para_rgb, ler_propriedades,
@@ -11,7 +11,7 @@ from pdf_leve.servicos.anotacoes import (
 class TestesAnotacoes(unittest.TestCase):
 
     def setUp(self):
-        self.documento = fitz.open()
+        self.documento = pymupdf.open()
         self.documento.new_page(width=595, height=842)
         girada = self.documento.new_page(width=595, height=842)
         girada.set_rotation(90)
@@ -38,7 +38,7 @@ class TestesAnotacoes(unittest.TestCase):
             pagina = self.documento[indice]
             retangulo = encaixar_caixa_texto(pagina, 50, 50, "Prazo: sexta-feira", 14)
             anotacao = criar_anotacao(pagina, retangulo, "Prazo: sexta-feira", "#d32f2f", 14)
-            self.assertTrue(retangulo_exibido(pagina, anotacao).contains(fitz.Point(60, 60)))
+            self.assertTrue(retangulo_exibido(pagina, anotacao).contains(pymupdf.Point(60, 60)))
             self.assertEqual(ler_propriedades(self.documento, anotacao), ("Prazo: sexta-feira", "#d32f2f", 14))
 
             novo = encaixar_caixa_texto(pagina, 100, 100, "Editado", 20)

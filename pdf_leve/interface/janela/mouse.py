@@ -7,7 +7,7 @@ Botão do meio: sempre arrasta a página.
 
 import tkinter as tk
 
-import fitz  # PyMuPDF
+import pymupdf
 
 from pdf_leve.configuracao.constantes import CORES_ANOTACAO, MARGEM_ROLAGEM_AUTOMATICA
 from pdf_leve.configuracao.tema import COR_BARRA, COR_PASSAR_MOUSE, COR_TEXTO, fontes
@@ -96,7 +96,7 @@ class MixinMouse:
         escala = self.zoom * self.escala_base
         pagina, xref = self.anotacao_selecionada
         pagina_pdf, anotacao = self.obter_anotacao(pagina, xref)
-        retangulo = fitz.Rect(self.arraste["retangulo"])
+        retangulo = pymupdf.Rect(self.arraste["retangulo"])
         limites = pagina_pdf.rect
         dx = min(max((x - x0) / escala, limites.x0 - retangulo.x0), limites.x1 - retangulo.x1)
         dy = min(max((y - y0) / escala, limites.y0 - retangulo.y0), limites.y1 - retangulo.y1)

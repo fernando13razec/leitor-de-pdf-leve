@@ -9,7 +9,7 @@ o arquivo em disco.
 
 import bisect
 
-import fitz  # PyMuPDF
+import pymupdf
 
 from pdf_leve.configuracao.constantes import (
     ESPACO_ENTRE_PAGINAS, LIMITE_PIXELS_CACHE, PAGINAS_PRE_CARREGADAS, PASSO_ZOOM_RODA, ZOOM_MAXIMO, ZOOM_MINIMO,
@@ -359,12 +359,12 @@ class MixinVisualizacao:
         if not (x <= x_tela <= x + largura and y <= y_tela <= y + altura):
             return None
         escala = self.zoom * self.escala_base
-        return pagina, fitz.Point((x_tela - x) / escala, (y_tela - y) / escala)
+        return pagina, pymupdf.Point((x_tela - x) / escala, (y_tela - y) / escala)
 
     def pagina_sob_cursor(self, x_tela, y_tela):
         """Como ponto_na_pagina, mas traz o ponto para dentro da página mais próxima."""
         pagina = self.pagina_na_altura(y_tela)
         x, y, largura, altura = self.disposicao[pagina]
         escala = self.zoom * self.escala_base
-        return pagina, fitz.Point((min(max(x_tela, x), x + largura) - x) / escala,
+        return pagina, pymupdf.Point((min(max(x_tela, x), x + largura) - x) / escala,
                                   (min(max(y_tela, y), y + altura) - y) / escala)

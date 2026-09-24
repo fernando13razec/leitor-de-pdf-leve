@@ -32,13 +32,25 @@ páginas escaneadas — abrindo rápido e sem travar a tela.
 - **Arrastar e soltar** arquivos na janela.
 - Tema escuro, interface minimalista, barra de título escura no Windows 10/11.
 
-## Requisitos
+## Download (Windows 10/11, sem instalar Python)
 
-- Windows 10 ou 11
-- Python 3.10 ou superior (testado com 3.14)
-- [PyMuPDF](https://pymupdf.readthedocs.io/) — a interface usa o `tkinter`, que já vem com o Python
+1. Baixe o `PDF-Leve-<versão>-windows-x64.zip` na página de
+   [Releases](https://github.com/fernando13razec/leitor-de-pdf-leve/releases/latest).
+2. Extraia o zip numa pasta de sua preferência (ex.: `C:\Programas\PDF Leve`).
+   Mantenha o `PDF Leve.exe` junto da pasta `_internal`.
+3. Abra o `PDF Leve.exe`.
 
-## Instalação
+> O executável não tem assinatura digital; na primeira execução o Windows pode mostrar
+> “O Windows protegeu o computador”. Clique em **Mais informações → Executar assim mesmo**.
+
+**Para abrir PDFs com duplo clique:** clique com o botão direito num PDF → **Abrir com** →
+**Escolher outro aplicativo** → **Procurar um aplicativo neste PC** → selecione o `PDF Leve.exe`
+e marque **Sempre**. Cada PDF abrirá em uma nova janela do programa.
+
+## Executar a partir do código-fonte
+
+Requisitos: Windows 10 ou 11, Python 3.10 ou superior (testado com 3.14) e
+[PyMuPDF](https://pymupdf.readthedocs.io/) — a interface usa o `tkinter`, que já vem com o Python.
 
 ```bash
 git clone https://github.com/fernando13razec/leitor-de-pdf-leve.git
@@ -81,8 +93,10 @@ Também é possível executar como módulo: `python -m pdf_leve arquivo.pdf`.
 ## Desenvolvimento
 
 ```bash
+pip install -r requirements-dev.txt
 python -m unittest discover -s testes -t . -v   # testes automáticos
 python ferramentas/gerar_icone.py               # recria os ícones em recursos/
+python ferramentas/gerar_executavel.py          # gera dist/PDF Leve/ e o .zip da Release
 ```
 
 A organização do código está descrita em [docs/arquitetura.md](docs/arquitetura.md).
