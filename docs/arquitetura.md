@@ -71,6 +71,15 @@ auxiliares que o fechem e espera a confirmação, porque o Windows não substitu
 O MuPDF guarda imagens decodificadas sem limite prático; `aparar_deposito_mupdf` esvazia esse
 depósito a cada `RENDERIZACOES_ENTRE_LIMPEZAS` páginas.
 
+## Ícones
+
+- `recursos/icone.ico` / `icone.png`: ícone do **programa** (janelas e barra de tarefas),
+  gerado por `ferramentas/gerar_icone.py`.
+- `recursos/icone-documento.ico`: ícone dos **arquivos PDF** no Explorer (folha com faixa vermelha
+  “PDF”), gerado por `ferramentas/gerar_icone_documento.py`. Ao registrar o PDF Leve como leitor,
+  aponte `DefaultIcon` do tipo de arquivo (`PdfLeve.Documento`) e de `Applications\PDF Leve.exe`
+  para este arquivo, que fica em `_internal\recursos\` no executável.
+
 ## Instância única
 
 Ao iniciar, `enviar_para_instancia_aberta` tenta entregar os arquivos a um programa já aberto por

@@ -95,7 +95,8 @@ Também é possível executar como módulo: `python -m pdf_leve arquivo.pdf`.
 ```bash
 pip install -r requirements-dev.txt
 python -m unittest discover -s testes -t . -v   # testes automáticos
-python ferramentas/gerar_icone.py               # recria os ícones em recursos/
+python ferramentas/gerar_icone.py               # recria o ícone do programa em recursos/
+python ferramentas/gerar_icone_documento.py     # recria o ícone dos arquivos PDF (vermelho, “PDF”)
 python ferramentas/gerar_executavel.py          # gera dist/PDF Leve/ e o .zip da Release
 ```
 
