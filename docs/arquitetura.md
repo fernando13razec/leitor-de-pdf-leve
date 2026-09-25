@@ -73,12 +73,16 @@ depósito a cada `RENDERIZACOES_ENTRE_LIMPEZAS` páginas.
 
 ## Ícones
 
-- `recursos/icone.ico` / `icone.png`: ícone do **programa** (janelas e barra de tarefas),
-  gerado por `ferramentas/gerar_icone.py`.
-- `recursos/icone-documento.ico`: ícone dos **arquivos PDF** no Explorer (folha com faixa vermelha
-  “PDF”), gerado por `ferramentas/gerar_icone_documento.py`. Ao registrar o PDF Leve como leitor,
-  aponte `DefaultIcon` do tipo de arquivo (`PdfLeve.Documento`) e de `Applications\PDF Leve.exe`
-  para este arquivo, que fica em `_internal\recursos\` no executável.
+Um único desenho (folha branca com faixa vermelha “PDF”), gerado por `ferramentas/gerar_icone.py`,
+serve ao programa e aos arquivos PDF:
+
+- `recursos/icone.ico`: embutido no `.exe` pelo PyInstaller e usado nas janelas (`iconbitmap`).
+  Nos tamanhos até 32 px, o texto é desenhado pixel a pixel para ficar nítido.
+- `recursos/icone.png` (alternativa para as janelas) e `recursos/icone-512.png` (README).
+
+Ao registrar o PDF Leve como leitor de PDFs, o `DefaultIcon` do tipo de arquivo
+(`PdfLeve.Documento`) e de `Applications\PDF Leve.exe` aponta para o próprio executável
+(`"...\PDF Leve.exe",0`).
 
 ## Instância única
 
