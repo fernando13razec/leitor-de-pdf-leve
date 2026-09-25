@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 NOME_APLICATIVO = "PDF Leve"
-VERSAO = "1.0.0"
+VERSAO = "1.0.1"
 
 # ------------------------------------------------------------------ pastas e arquivos
 # Quando empacotado com PyInstaller, os recursos ficam em sys._MEIPASS.

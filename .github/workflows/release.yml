@@ -112,7 +112,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          sed "s/{VERSAO}/${VERSAO}/g" .github/notas_release.md > notas.md
+          # novidades desta versão (seção "## [VERSAO]" do CHANGELOG.md) + instruções de download
+          awk -v cabecalho="## [${VERSAO}]" 'index($0, cabecalho) == 1 {dentro=1; next} /^## \[/ {dentro=0} dentro' CHANGELOG.md > novidades.md
+          if [ -s novidades.md ]; then { echo "## Novidades"; cat novidades.md; } > notas.md; else : > notas.md; fi
+          sed "s/{VERSAO}/${VERSAO}/g" .github/notas_release.md >> notas.md
           echo -e "\n**SHA-256** do zip: \`$(sha256sum "dist/PDF-Leve-${VERSAO}-windows-x64.zip" | cut -d' ' -f1)\`" >> notas.md
           ZIP="dist/PDF-Leve-${VERSAO}-windows-x64.zip"
           if [ "${GITHUB_REF_TYPE}" = "tag" ]; then

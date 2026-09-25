@@ -40,7 +40,7 @@ python ferramentas/gerar_executavel.py          # executável (PyInstaller, modo
 ## Versões e Releases
 
 A versão fica em `pdf_leve/configuracao/constantes.py` (`VERSAO`). Para lançar: atualize `VERSAO`,
-faça o commit e envie a tag `v<versão>` — o fluxo `.github/workflows/release.yml` testa, gera o
+acrescente a seção `## [<versão>]` no `CHANGELOG.md` (vira as “Novidades” da Release), faça o commit e envie a tag `v<versão>` — o fluxo `.github/workflows/release.yml` testa, gera o
 executável no Windows, assina (quando a SignPath estiver configurada; veja
 `docs/assinatura-de-codigo.md`) e publica a Release. O fluxo recusa tags que não batem com `VERSAO`.
 Para só testar o empacotamento, rode o fluxo “Release” manualmente (gera um artefato, sem publicar).
