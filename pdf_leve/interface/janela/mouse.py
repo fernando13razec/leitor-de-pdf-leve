@@ -204,7 +204,7 @@ class MixinMouse:
             self.alternar_modo_texto()
         elif self.tela_cheia:
             self.alternar_tela_cheia(False)
-        elif self.termo_busca:
+        elif self.termos_busca:
             self.limpar_busca()
 
     def alternar_modo_texto(self):

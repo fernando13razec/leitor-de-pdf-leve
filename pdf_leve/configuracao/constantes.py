@@ -54,6 +54,7 @@ TAMANHO_FONTE_MAXIMO = 72
 
 # ------------------------------------------------------------------ busca
 TEMPO_POR_ETAPA_BUSCA = 0.04  # s de busca por vez, para a interface continuar respondendo
+SEPARADOR_TERMOS_BUSCA = ";"  # “multa; prazo de entrega” busca os dois termos ao mesmo tempo
 
 # ------------------------------------------------------------------ instância única
 PORTA_INSTANCIA_UNICA = 48213       # só aceita conexões do próprio computador (127.0.0.1)

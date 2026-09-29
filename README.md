@@ -26,7 +26,8 @@ páginas escaneadas — abrindo rápido e sem travar a tela.
 - **Anotações de texto coloridas**, salvas no próprio PDF no padrão do formato — aparecem também no
   Chrome, no Adobe e em outros leitores.
 - **Seleção e cópia de texto**, inclusive em páginas com OCR e entre páginas diferentes.
-- **Busca em segundo plano** com contador de ocorrências (“3 de 27”).
+- **Busca em segundo plano** com contador de ocorrências (“3 de 27”). Vários termos de uma vez,
+  separados por ponto e vírgula (`multa; prazo de entrega`), cada um destacado com uma cor.
 - **Salvar páginas em PDF** (todas, a atual ou intervalos como `1-5, 8, 11-13`).
 - **Girar páginas**, **tela cheia**, **página inteira** / **ajuste à largura**.
 - **Arrastar e soltar** arquivos na janela.

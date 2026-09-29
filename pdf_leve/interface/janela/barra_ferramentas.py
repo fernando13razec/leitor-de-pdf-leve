@@ -6,6 +6,7 @@ from tkinter import ttk
 
 from pdf_leve.configuracao.constantes import (
     DURACAO_AVISO_MS, LINHAS_POR_SETA, NOME_APLICATIVO, PASSO_ZOOM, PIXELS_POR_UNIDADE_ROLAGEM,
+    SEPARADOR_TERMOS_BUSCA,
 )
 from pdf_leve.configuracao.tema import (
     COR_AVISO, COR_BARRA, COR_BARRA_ROLAGEM, COR_BARRA_ROLAGEM_ATIVA, COR_BORDA_BOTAO_COR, COR_CAMPO,
@@ -108,10 +109,11 @@ class MixinBarraFerramentas:
         tk.Label(caixa, text=glifo("buscar"), font=fonte_icone(10), bg=COR_CAMPO, fg=COR_TEXTO_SUAVE,
                  padx=6).pack(side="left")
         self.var_busca = tk.StringVar()
-        self.campo_busca = tk.Entry(caixa, width=22, textvariable=self.var_busca, font=fontes.interface,
+        self.campo_busca = tk.Entry(caixa, width=26, textvariable=self.var_busca, font=fontes.interface,
                                     bg=COR_CAMPO, fg=COR_TEXTO, insertbackground=COR_TEXTO, relief="flat",
                                     highlightthickness=0)
         self.campo_busca.pack(side="left", ipady=4)
+        Dica(self.campo_busca, f"Buscar (Ctrl+F) · vários termos: separe com “{SEPARADOR_TERMOS_BUSCA}”")
         self.campo_busca.bind("<Return>", lambda e: self.buscar())
         self.campo_busca.bind("<Shift-Return>", lambda e: self.buscar(voltar=True))
         self.campo_busca.bind("<Escape>", lambda e: self.limpar_busca())

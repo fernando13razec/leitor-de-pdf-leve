@@ -15,8 +15,8 @@ from pdf_leve.configuracao.constantes import (
     ESPACO_ENTRE_PAGINAS, LIMITE_PIXELS_CACHE, PAGINAS_PRE_CARREGADAS, PASSO_ZOOM_RODA, ZOOM_MAXIMO, ZOOM_MINIMO,
 )
 from pdf_leve.configuracao.tema import (
-    COR_CARREGANDO, COR_CONTORNO_ANOTACAO, COR_PAGINA, COR_RESULTADO_ATUAL, COR_RESULTADO_BUSCA,
-    COR_SOMBRA_PAGINA, fontes,
+    COR_CARREGANDO, COR_CONTORNO_ANOTACAO, COR_PAGINA, COR_RESULTADO_ATUAL, COR_SOMBRA_PAGINA,
+    CORES_TERMOS_BUSCA, fontes,
 )
 from pdf_leve.interface.utilidades import imagem_ppm
 from pdf_leve.servicos.anotacoes import retangulo_exibido
@@ -195,12 +195,12 @@ class MixinVisualizacao:
             return
         self.desenhar_selecao_texto()
         for pagina in self.itens_na_tela:
-            for indice, retangulo in enumerate(self.retangulos_resultados(pagina)):
+            for indice, (retangulo, termo) in enumerate(self.retangulos_resultados(pagina)):
                 x0, y0, x1, y1 = self.retangulo_na_tela(pagina, retangulo)
                 atual = self.resultado_atual == (pagina, indice)
+                cor = COR_RESULTADO_ATUAL if atual else CORES_TERMOS_BUSCA[termo % len(CORES_TERMOS_BUSCA)]
                 tela.create_rectangle(x0 - 2, y0 - 1, x1 + 2, y1 + 1, tags="sobreposicao",
-                                      outline=COR_RESULTADO_ATUAL if atual else COR_RESULTADO_BUSCA,
-                                      width=3 if atual else 2)
+                                      outline=cor, width=3 if atual else 2)
         if self.anotacao_selecionada:
             encontrada = self.obter_anotacao(*self.anotacao_selecionada)
             if encontrada:

@@ -1,5 +1,13 @@
 # Histórico de versões
 
+## [Não lançado]
+
+### Adicionado
+- Busca de vários termos ao mesmo tempo: separe-os com ponto e vírgula no campo de busca
+  (ex.: `multa; prazo de entrega; rescisão`). Cada termo é destacado com uma cor, a navegação
+  percorre todas as ocorrências na ordem do documento e o aviso final mostra quantas vezes cada
+  termo apareceu.
+
 ## [1.0.1] - 2026-09-24
 
 ### Alterado

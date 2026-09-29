@@ -28,7 +28,8 @@ COR_ICONE_TELA_VAZIA = "#4a4c53"
 COR_BARRA_ROLAGEM = "#44464d"
 COR_BARRA_ROLAGEM_ATIVA = "#5a5d66"
 
-COR_RESULTADO_BUSCA = "#f9c74f"
+# Uma cor por termo buscado (repetem-se se houver mais termos); o resultado atual é sempre laranja.
+CORES_TERMOS_BUSCA = ("#f9c74f", "#2ec4b6", "#e040fb", "#4cc9f0", "#90be6d")
 COR_RESULTADO_ATUAL = "#ff6d00"
 COR_CONTORNO_ANOTACAO = "#1e88e5"
 COR_SELECAO_TEXTO_RGBA = (51, 136, 255, 80)  # azul translúcido

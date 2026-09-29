@@ -15,6 +15,7 @@ pdf_leve/
 │   ├── anotacoes.py           anotações FreeText: criar, ler, alterar, medir
 │   ├── texto.py               palavras, linhas visuais, texto selecionado
 │   ├── intervalos.py          “1-5, 8, 11-13” → páginas
+│   ├── busca.py               vários termos (“multa; prazo”): separação, ocorrências em ordem de leitura
 │   └── instancia_unica.py     entrega de arquivos a um programa já aberto
 ├── sistema/
 │   └── windows.py             barra de título escura, arrastar arquivos, DPI, ID na barra de tarefas
@@ -42,7 +43,7 @@ compartilham o estado criado em `JanelaPdf.__init__`:
 | `mouse.py` | eventos do mouse, menu de contexto, Esc, modo texto |
 | `selecao_texto.py` | seleção e cópia de texto |
 | `anotacoes.py` | criar/editar/mover/excluir anotações, cor e tamanho |
-| `busca.py` | busca em etapas, contador e navegação entre resultados |
+| `busca.py` | busca em etapas (um ou vários termos, uma cor por termo), contador e navegação entre resultados |
 
 ## Renderização
 
