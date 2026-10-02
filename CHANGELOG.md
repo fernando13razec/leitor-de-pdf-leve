@@ -1,6 +1,6 @@
 # Histórico de versões
 
-## [Não lançado]
+## [1.0.2] - 2026-10-02
 
 ### Adicionado
 - Busca de vários termos ao mesmo tempo: separe-os com ponto e vírgula no campo de busca
