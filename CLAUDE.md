@@ -30,7 +30,8 @@ A arquitetura está descrita em `docs/arquitetura.md`; leia antes de mudanças e
 ## Comandos
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements-dev.txt             # app + Pillow, pyflakes e PyInstaller
+python -m pyflakes pdf_leve testes ferramentas iniciar.pyw   # verificação estática (a CI também roda)
 python -m unittest discover -s testes -t . -v   # testes (devem passar antes de cada commit)
 pythonw iniciar.pyw arquivo.pdf                 # executar
 python ferramentas/gerar_icone.py               # regenerar ícones (requer Pillow)
@@ -54,6 +55,8 @@ PDF Leve e substitua `PDF Leve.exe` e `_internal` pelos de `dist/PDF Leve/` (man
 
 ## Cuidados
 
+- Instância única (`PORTA_INSTANCIA_UNICA`, 127.0.0.1): se outra cópia do PDF Leve estiver aberta
+  (inclusive a instalada), `iniciar.pyw` só entrega o arquivo a ela. Feche-a antes de testar mudanças.
 - `iniciar.pyw` precisa do `if __name__ == "__main__"`: os processos de renderização (spawn)
   reimportam o arquivo principal.
 - Não versione PDFs reais de usuários (podem conter dados sensíveis); use PDFs gerados nos testes.
