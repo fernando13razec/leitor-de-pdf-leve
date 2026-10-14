@@ -45,6 +45,13 @@ executável no Windows, assina (quando a SignPath estiver configurada; veja
 `docs/assinatura-de-codigo.md`) e publica a Release. O fluxo recusa tags que não batem com `VERSAO`.
 Para só testar o empacotamento, rode o fluxo “Release” manualmente (gera um artefato, sem publicar).
 
+## Instalação local
+
+O app está instalado neste PC em `%LOCALAPPDATA%\Programs\PDF Leve` (`PDF Leve.exe` + `_internal`,
+com atalho no Menu Iniciar). **Sempre que o app for alterado, atualize essa instalação também:** gere o
+executável (`python ferramentas/gerar_executavel.py --etapa executavel`), feche as janelas abertas do
+PDF Leve e substitua `PDF Leve.exe` e `_internal` pelos de `dist/PDF Leve/` (mantenha o `LICENSE.txt`).
+
 ## Cuidados
 
 - `iniciar.pyw` precisa do `if __name__ == "__main__"`: os processos de renderização (spawn)
