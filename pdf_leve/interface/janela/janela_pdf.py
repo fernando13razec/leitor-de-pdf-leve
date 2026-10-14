@@ -95,9 +95,8 @@ class JanelaPdf(MixinBarraFerramentas, MixinArquivo, MixinVisualizacao, MixinMou
                 cabe = x + largura + DESLOCAMENTO_CASCATA < largura_tela and y + altura + DESLOCAMENTO_CASCATA < altura_tela
                 x, y = (x + DESLOCAMENTO_CASCATA, y + DESLOCAMENTO_CASCATA) if cabe else (40, 20)
                 geometria = f"{largura}x{altura}+{x}+{y}"
-        self.geometry(geometria)
-        if self.preferencias.get("maximizada") and perto_de is None:
-            self.state("zoomed")
+        self.geometry(geometria)  # tamanho usado ao sair do modo maximizado
+        self.state("zoomed")  # toda janela abre maximizada
         self.minsize(560, 400)
 
     @property

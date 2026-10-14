@@ -199,10 +199,10 @@ class MixinArquivo:
         if self.tela_cheia:
             self.alternar_tela_cheia(False)
             self.update_idletasks()
-        maximizada = self.state() == "zoomed"
-        if not maximizada:
+        if self.state() != "zoomed":
             self.preferencias["geometria"] = self.geometry()
-        self.preferencias.update(maximizada=maximizada, cor=self.cor, tamanho_fonte=self.tamanho_fonte,
+        self.preferencias.pop("maximizada", None)  # obsoleta: as janelas sempre abrem maximizadas
+        self.preferencias.update(cor=self.cor, tamanho_fonte=self.tamanho_fonte,
                                  ajuste=self.modo_ajuste, zoom=self.zoom)
         salvar_preferencias(self.preferencias)
         self.geracao_busca += 1
