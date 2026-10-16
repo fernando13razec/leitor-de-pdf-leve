@@ -2,9 +2,10 @@
 
 Fluxo da renderização: `renderizar_visiveis` coloca na tela as páginas visíveis que já estão no
 cache e pede as que faltam (visíveis primeiro, depois as próximas na direção da leitura) aos
-processos auxiliares. As imagens voltam por `receber_imagem`. Páginas com anotações ainda não
-salvas (`paginas_locais`) são renderizadas aqui mesmo, pois os processos auxiliares só enxergam
-o arquivo em disco.
+processos auxiliares. As imagens voltam pelo DocumentoAberto, que as guarda no cache (comum a
+todas as janelas do documento) e as oferece a cada uma por `posicionar_se_visivel`. Páginas com
+anotações ainda não salvas (`paginas_locais`) são renderizadas aqui mesmo, pois os processos
+auxiliares só enxergam o arquivo em disco.
 """
 
 import bisect
@@ -12,7 +13,7 @@ import bisect
 import pymupdf
 
 from pdf_leve.configuracao.constantes import (
-    ESPACO_ENTRE_PAGINAS, LIMITE_PIXELS_CACHE, PAGINAS_PRE_CARREGADAS, PASSO_ZOOM_RODA, ZOOM_MAXIMO, ZOOM_MINIMO,
+    ESPACO_ENTRE_PAGINAS, PAGINAS_PRE_CARREGADAS, PASSO_ZOOM_RODA, ZOOM_MAXIMO, ZOOM_MINIMO,
 )
 from pdf_leve.configuracao.tema import (
     COR_CARREGANDO, COR_CONTORNO_ANOTACAO, COR_PAGINA, COR_RESULTADO_ATUAL, COR_SOMBRA_PAGINA,
@@ -145,18 +146,11 @@ class MixinVisualizacao:
         self.tela.tag_raise("sobreposicao")
         self.itens_na_tela[pagina] = (chave, item, imagem)
 
-    def guardar_no_cache(self, chave, imagem):
-        self.cache_imagens[chave] = imagem
-        self.pixels_em_cache += imagem.width() * imagem.height()
-        while self.pixels_em_cache > LIMITE_PIXELS_CACHE and len(self.cache_imagens) > 1:
-            _, antiga = self.cache_imagens.popitem(last=False)
-            self.pixels_em_cache -= antiga.width() * antiga.height()
-
     def renderizar_localmente(self, pagina):
         chave = self.chave_pagina(pagina)
         imagem_pdf = renderizar_pagina(self.documento[pagina], chave[2] / 1000)
         imagem = imagem_ppm(imagem_pdf.width, imagem_pdf.height, imagem_pdf.samples)
-        self.guardar_no_cache(chave, imagem)
+        self.aberto.guardar_no_cache(chave, imagem)
         self.posicionar(pagina, chave, imagem)
         aparar_deposito_mupdf()
 
@@ -168,12 +162,11 @@ class MixinVisualizacao:
                 return chave, pagina
         return None
 
-    def receber_imagem(self, chave, largura, altura, amostras):
-        """Página pronta vinda de um processo auxiliar. Retorna True se ela foi colocada na tela."""
-        if self.fechada or not self.documento or chave[0] != self.id_documento:
+    def posicionar_se_visivel(self, chave, imagem):
+        """Página pronta vinda de um processo auxiliar (já no cache do documento).
+        Retorna True se ela foi colocada na tela."""
+        if self.fechada or not self.disposicao or chave[0] != self.id_documento:
             return False
-        imagem = imagem_ppm(largura, altura, amostras)
-        self.guardar_no_cache(chave, imagem)
         pagina = chave[1]
         primeira, ultima = self.faixa_visivel()
         if primeira - 1 <= pagina <= ultima + 1 and chave == self.chave_pagina(pagina):
@@ -182,10 +175,17 @@ class MixinVisualizacao:
         return False
 
     def invalidar(self, pagina):
-        """A página mudou (anotação): passa a ser renderizada aqui até o arquivo ser salvo."""
-        self.versao_pagina[pagina] += 1
-        self.paginas_locais.add(pagina)
-        self.agendar_renderizacao()
+        """A página mudou (anotação): todas as janelas do documento a renderizam de novo."""
+        self.aberto.paginas_alteradas(pagina)
+
+    def refazer_por_rotacao(self):
+        """Páginas giradas (aqui ou noutra janela do documento): refaz a disposição na página atual."""
+        atual = self.pagina_atual()
+        self.anotacao_selecionada = None
+        if self.modo_ajuste:
+            self.zoom = self.zoom_de_ajuste(self.modo_ajuste, atual)
+        self.montar_disposicao()
+        self.ir_para_pagina(atual)
 
     def desenhar_sobreposicoes(self):
         """Seleção de texto, resultados da busca e contorno da anotação selecionada."""

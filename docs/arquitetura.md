@@ -21,6 +21,7 @@ pdf_leve/
 │   └── windows.py             barra de título escura, arrastar arquivos, DPI, ID na barra de tarefas
 └── interface/
     ├── aplicativo.py          raiz Tk invisível: janelas, renderizadores, servidor de instância única
+    ├── documento_aberto.py    DocumentoAberto: um PDF aberto, compartilhado pelas janelas que o exibem
     ├── utilidades.py          plural, centralizar, imagens (PPM e PNG com transparência)
     ├── componentes/           BotaoIcone, BotaoPlano, Dica, SeletorCores, SeletorTamanho
     ├── dialogos/              DialogoMensagem, DialogoAnotacao, DialogoExportacao, PainelEstilo
@@ -30,6 +31,23 @@ pdf_leve/
 As dependências seguem uma direção só: `interface` → `servicos` / `sistema` → `configuracao`.
 Os serviços não importam nada da interface.
 
+## Documento e janelas
+
+O mesmo PDF pode estar em várias janelas (`Ctrl+Shift+N`, botão da barra, menu de contexto ou
+abrindo de novo um arquivo que já está aberto). Cada janela é uma **vista** de um
+`DocumentoAberto`, que guarda o que é do arquivo: o documento do PyMuPDF, `caminho`, `senha`,
+`modificado`, `id_documento`, `versao_pagina`, `retangulos_paginas`, `paginas_locais`, o cache de
+palavras e o cache de páginas prontas. A janela lê esses valores por propriedades de mesmo nome;
+rolagem, zoom, modo de ajuste, busca, seleções e modo texto são de cada janela.
+
+Uma alteração feita numa vista é avisada a todas pelo documento: `paginas_alteradas` (anotação),
+`disposicao_alterada` (rotação: cada janela chama `refazer_por_rotacao`) e `marcar_modificado`
+(título com “●”). Salvar em qualquer janela salva o documento; depois de um salvamento completo
+ou de “Salvar como”, o documento é relido e todas as vistas o exibem de novo (`exibir`), cada uma
+na posição em que estava. Fechar uma janela só a desanexa; a última fecha o documento e é a única
+que pergunta se as alterações devem ser salvas. Com mais de uma vista, o título mostra o número
+da janela (`contrato.pdf (2) — PDF Leve`).
+
 ## A janela (`interface/janela/`)
 
 `JanelaPdf` herda de `tk.Toplevel` e de sete mixins; cada um cuida de um assunto e todos
@@ -38,7 +56,7 @@ compartilham o estado criado em `JanelaPdf.__init__`:
 | Mixin | Responsabilidade |
 |---|---|
 | `barra_ferramentas.py` | monta a interface, liga atalhos, avisos, diálogos, tela cheia |
-| `arquivo.py` | abrir, carregar, salvar, salvar como, exportar páginas, girar, fechar |
+| `arquivo.py` | abrir, carregar/exibir, nova janela do mesmo PDF, salvar, salvar como, exportar páginas, girar, fechar |
 | `visualizacao.py` | disposição das páginas, renderização e cache, rolagem, zoom, navegação, coordenadas |
 | `mouse.py` | eventos do mouse, menu de contexto, Esc, modo texto |
 | `selecao_texto.py` | seleção e cópia de texto |
@@ -54,8 +72,12 @@ dois por padrão), compartilhados por todas as janelas.
 1. `renderizar_visiveis` monta a fila de pedidos da janela: páginas visíveis primeiro, depois as
    próximas na direção da leitura (`PAGINAS_PRE_CARREGADAS`).
 2. `distribuir` entrega os pedidos aos processos livres, começando pela janela em foco.
-3. `receber` (chamado periodicamente pelo laço do Tk) recebe os pixels e os passa a
-   `receber_imagem`, que guarda a imagem no cache (LRU limitado por `LIMITE_PIXELS_CACHE`).
+3. `receber` (chamado periodicamente pelo laço do Tk) recebe os pixels e os passa ao
+   `DocumentoAberto.receber_imagem`, que guarda a imagem no cache do documento (LRU limitado por
+   `LIMITE_PIXELS_CACHE`) e a oferece a todas as suas janelas (`posicionar_se_visivel`).
+
+O cache e o conjunto `em_renderizacao` são do documento: duas janelas do mesmo PDF no mesmo zoom
+não pedem a mesma página duas vezes.
 
 Cada imagem tem a chave `(id_documento, página, escala × 1000, versão_da_página)`. A versão muda
 quando a página é girada ou anotada, o que invalida imagens antigas sem precisar apagá-las.
@@ -90,7 +112,7 @@ Ao registrar o PDF Leve como leitor de PDFs, o `DefaultIcon` do tipo de arquivo
 Ao iniciar, `enviar_para_instancia_aberta` tenta entregar os arquivos a um programa já aberto por
 um soquete TCP em `127.0.0.1:48213`. Se ninguém responder, este processo vira a instância principal
 e passa a escutar a porta (`ouvir_novas_instancias`). O `Aplicativo` abre cada arquivo recebido em
-uma nova janela (ou traz para a frente a janela que já o exibe).
+uma nova janela; se o arquivo já estiver aberto, a nova janela é mais uma vista do mesmo documento.
 
 ## Detalhes do Windows
 

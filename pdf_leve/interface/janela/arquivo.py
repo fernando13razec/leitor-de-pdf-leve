@@ -1,14 +1,16 @@
-"""Operações com o arquivo: abrir, salvar, salvar como, exportar páginas, girar e fechar a janela."""
+"""Operações com o arquivo: abrir (também numa nova janela), salvar, salvar como, exportar páginas,
+girar e fechar a janela. O documento é compartilhado pelas janelas que o exibem (DocumentoAberto)."""
 
 import os
-from tkinter import filedialog, simpledialog
+from tkinter import filedialog
 
 import pymupdf
 
 from pdf_leve.configuracao.constantes import NOME_APLICATIVO
 from pdf_leve.configuracao.preferencias import salvar_preferencias
 from pdf_leve.interface.dialogos import DialogoExportacao
-from pdf_leve.interface.utilidades import plural
+from pdf_leve.interface.documento_aberto import DocumentoAberto
+from pdf_leve.interface.utilidades import plural, trazer_para_frente
 from pdf_leve.servicos.intervalos import agrupar_sequencias
 
 TIPOS_PDF = [("Arquivos PDF", "*.pdf")]
@@ -31,50 +33,31 @@ class MixinArquivo:
         if caminhos:
             self.aplicativo.abrir_arquivos(list(caminhos), origem=self)
 
-    def carregar(self, caminho, ancora=None):
-        """Abre o PDF nesta janela. `ancora` preserva a posição (usado ao recarregar)."""
-        try:
-            documento = pymupdf.open(caminho)
-        except Exception as erro:
-            self.mostrar_erro(f"Não foi possível abrir o arquivo:\n{erro}")
-            return
-        senha = None
-        if documento.needs_pass:
-            senha = simpledialog.askstring(NOME_APLICATIVO, "Este PDF é protegido. Senha:", show="*", parent=self)
-            if not senha or not documento.authenticate(senha):
-                documento.close()
-                self.mostrar_erro("Senha incorreta ou não informada.")
-                return
-        if documento.page_count == 0:
-            documento.close()
-            self.mostrar_erro("O arquivo não tem páginas.")
-            return
-        if self.documento:
-            self.documento.close()
-            self.renderizadores.enviar_a_todos(("descartar", self.id_documento))
+    def carregar(self, caminho):
+        """Abre o PDF nesta janela."""
+        aberto = DocumentoAberto.abrir(self.aplicativo, caminho, self)
+        if aberto:
+            self.preferencias["ultima_pasta"] = os.path.dirname(aberto.caminho)
+            self.exibir(aberto)
 
-        self.documento = documento
-        self.caminho = os.path.abspath(caminho)
-        self.senha = senha
-        self.preferencias["ultima_pasta"] = os.path.dirname(self.caminho)
-        self.modificado = False
+    def exibir(self, aberto, ancora=None):
+        """Mostra nesta janela um documento aberto (talvez já exibido em outras janelas).
+        `ancora` preserva a posição (usado ao recarregar e ao abrir uma nova vista)."""
+        if not aberto.documento:
+            return  # o documento foi fechado antes de a janela ficar pronta
+        if self.aberto is not aberto:
+            if self.aberto:
+                self.aberto.desanexar(self)
+            self.aberto = aberto
+            aberto.anexar(self)
         self.anotacao_selecionada = None
         self.selecao_texto = None
-        self.id_documento = self.aplicativo.proximo_id_documento()
-        self.versao_pagina = [0] * len(documento)
-        self.paginas_locais.clear()
-        self.cache_imagens.clear()
-        self.pixels_em_cache = 0
-        self.em_renderizacao.clear()
         self.fila_pedidos = []
-        self.cache_palavras.clear()
-        self.renderizadores.enviar_a_todos(("abrir", self.id_documento, self.caminho, self.senha))
         self.limpar_busca(focar=False)
-        self.retangulos_paginas = [pagina.rect for pagina in documento]
-        self.rotulo_total.config(text=f"/ {len(documento)}")
+        self.rotulo_total.config(text=f"/ {len(self.documento)}")
         self.update_idletasks()
-        if ancora is None and self.modo_ajuste:
-            self.zoom = self.zoom_de_ajuste(self.modo_ajuste, 0)
+        if self.modo_ajuste:
+            self.zoom = self.zoom_de_ajuste(self.modo_ajuste, ancora[0] if ancora else 0)
         self.montar_disposicao(ancora)
         if ancora is None:
             self.tela.xview_moveto(0)
@@ -82,30 +65,25 @@ class MixinArquivo:
         self.atualizar_titulo()
         self.tela.focus_set()
 
+    def abrir_em_nova_janela(self):
+        """Mais uma janela com este mesmo PDF, na mesma página e no mesmo zoom."""
+        if not self.documento:
+            return
+        janela = self.aplicativo.nova_janela(perto_de=self, aberto=self.aberto, ancora=self.criar_ancora(0, 0))
+        janela.zoom, janela.modo_ajuste = self.zoom, self.modo_ajuste
+        janela.atualizar_botoes()
+        trazer_para_frente(janela)
+
     # ------------------------------------------------------------------ salvar
     def salvar(self):
+        """Salva o documento (vale para todas as janelas que o exibem)."""
         if not self.documento:
             return False
         try:
-            if self.documento.can_save_incrementally():
-                self.documento.saveIncr()
-                # os processos auxiliares relêem o arquivo, que agora contém as alterações
-                self.renderizadores.enviar_a_todos(("abrir", self.id_documento, self.caminho, self.senha))
-                self.paginas_locais.clear()
-            else:
-                ancora = self.criar_ancora(0, 0)
-                temporario = self.caminho + ".tmp"
-                self.documento.save(temporario, garbage=3, deflate=True)
-                self.renderizadores.fechar_documento(self.id_documento)  # o Windows não substitui arquivos abertos
-                self.documento.close()
-                self.documento = None
-                os.replace(temporario, self.caminho)
-                self.carregar(self.caminho, ancora)
+            self.aberto.salvar()
         except Exception as erro:
             self.mostrar_erro(f"Erro ao salvar:\n{erro}\n\nTente “Salvar como” (Ctrl+Shift+S).")
             return False
-        self.modificado = False
-        self.atualizar_titulo()
         self.avisar("Salvo")
         return True
 
@@ -120,12 +98,10 @@ class MixinArquivo:
         if os.path.abspath(destino) == self.caminho:
             return self.salvar()
         try:
-            ancora = self.criar_ancora(0, 0)
-            self.documento.save(destino, garbage=3, deflate=True)
+            self.aberto.salvar_como(destino)
         except Exception as erro:
             self.mostrar_erro(f"Erro ao salvar:\n{erro}")
             return False
-        self.carregar(destino, ancora)
         self.avisar("Salvo")
         return True
 
@@ -172,18 +148,15 @@ class MixinArquivo:
             self.retangulos_paginas[indice] = pagina.rect
             self.versao_pagina[indice] += 1
             self.renderizadores.enviar_a_todos(("girar", self.id_documento, indice, pagina.rotation))
-        self.anotacao_selecionada = None
         self.marcar_modificado()
-        if self.modo_ajuste:
-            self.zoom = self.zoom_de_ajuste(self.modo_ajuste, atual)
-        self.montar_disposicao()
-        self.ir_para_pagina(atual)
+        self.aberto.disposicao_alterada()  # refaz a disposição em todas as janelas do documento
         self.avisar("Todas as páginas giradas" if todas else f"Página {atual + 1} girada")
 
     # ------------------------------------------------------------------ fechar
     def confirmar_descarte(self):
-        """Pergunta se deve salvar alterações pendentes. Retorna False se o usuário cancelar."""
-        if not self.modificado:
+        """Pergunta se deve salvar alterações pendentes (só na última janela do documento).
+        Retorna False se o usuário cancelar."""
+        if not self.modificado or len(self.aberto.janelas) > 1:
             return True
         resposta = self.perguntar(
             NOME_APLICATIVO, f"Salvar as alterações em “{os.path.basename(self.caminho)}”?",
@@ -209,11 +182,9 @@ class MixinArquivo:
         self.fechada = True
         if self.painel_estilo:
             self.painel_estilo.fechar()
-        if self.documento:
-            self.renderizadores.enviar_a_todos(("descartar", self.id_documento))
-            self.documento.close()
-            self.documento = None
-        self.cache_imagens.clear()
+        if self.aberto:
+            self.aberto.desanexar(self)  # a última janela fecha o documento
+            self.aberto = None
         self.itens_na_tela.clear()
         self.destroy()
         self.aplicativo.janela_fechada(self)

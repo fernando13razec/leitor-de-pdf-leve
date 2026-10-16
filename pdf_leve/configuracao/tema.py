@@ -71,6 +71,7 @@ def fonte_icone(tamanho):
 # Glifos das fontes Segoe Fluent Icons / Segoe MDL2 Assets, com alternativa em texto.
 GLIFOS = {
     "abrir": ("\uE8E5", "Abrir"),
+    "nova_janela": ("\uE8A7", "Janela"),
     "salvar": ("\uE74E", "Salvar"),
     "imprimir": ("\uE749", "Páginas"),
     "anterior": ("\uE76B", "‹"),

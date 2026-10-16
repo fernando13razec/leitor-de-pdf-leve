@@ -45,6 +45,8 @@ class MixinBarraFerramentas:
 
         # arquivo
         BotaoIcone(barra, "abrir", self.abrir_arquivo, "Abrir PDF (Ctrl+O) · nova janela: Ctrl+N").pack(side="left")
+        BotaoIcone(barra, "nova_janela", self.abrir_em_nova_janela,
+                   "Abrir este PDF em nova janela (Ctrl+Shift+N)").pack(side="left")
         self.botao_salvar = BotaoIcone(barra, "salvar", self.salvar, "Salvar (Ctrl+S)")
         self.botao_salvar.pack(side="left")
         BotaoIcone(barra, "imprimir", self.exportar_paginas, "Salvar páginas em PDF (Ctrl+P)").pack(side="left")
@@ -193,6 +195,7 @@ class MixinBarraFerramentas:
         # Atenção: "<Control-1>" no Tk é Ctrl + botão 1 do mouse; para teclas numéricas, use "Key-".
         self.bind("<Control-o>", lambda e: self.abrir_arquivo())
         self.bind("<Control-n>", lambda e: self.aplicativo.nova_janela(perto_de=self))
+        self.bind("<Control-N>", lambda e: self.abrir_em_nova_janela())
         self.bind("<Control-s>", lambda e: self.salvar())
         self.bind("<Control-S>", lambda e: self.salvar_como())
         self.bind("<Control-p>", lambda e: self.exportar_paginas())
@@ -228,13 +231,15 @@ class MixinBarraFerramentas:
     # ------------------------------------------------------------------ estado visual
     def atualizar_titulo(self):
         nome = os.path.basename(self.caminho) if self.caminho else ""
+        vistas = self.aberto.janelas if self.aberto else []
+        if nome and len(vistas) > 1 and self in vistas:
+            nome += f" ({vistas.index(self) + 1})"  # o mesmo PDF em várias janelas
         marcador = "● " if self.modificado else ""
         self.title(f"{marcador}{nome} — {NOME_APLICATIVO}" if nome else NOME_APLICATIVO)
         self.botao_salvar.definir_cor_texto(COR_DESTAQUE if self.modificado else COR_TEXTO)
 
     def marcar_modificado(self):
-        self.modificado = True
-        self.atualizar_titulo()
+        self.aberto.marcar_modificado()  # o título muda em todas as janelas do documento
 
     def atualizar_botoes(self):
         self.botao_texto.definir_ativo(self.modo_texto)

@@ -1,5 +1,14 @@
 # Histórico de versões
 
+## [Não lançado]
+
+### Adicionado
+- O mesmo PDF pode ser aberto em várias janelas, como no navegador: `Ctrl+Shift+N`, o novo botão
+  da barra, o item “Abrir em nova janela” do menu de contexto ou abrir de novo um arquivo que já
+  está aberto. Cada janela tem rolagem, zoom e busca próprios; anotações e rotações aparecem em
+  todas, e salvar em qualquer uma salva o documento. Só a última janela do arquivo pergunta se as
+  alterações devem ser salvas.
+
 ## [1.0.2] - 2026-10-02
 
 ### Adicionado

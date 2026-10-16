@@ -190,8 +190,9 @@ class MixinMouse:
             local = self.ponto_na_pagina(x, y)
             if local:
                 menu.add_command(label="Adicionar anotação de texto aqui", command=lambda: self.nova_anotacao(*local))
-            elif not self.selecao_texto:
-                return
+        if menu.index("end") is not None and menu.type("end") != "separator":
+            menu.add_separator()
+        menu.add_command(label="Abrir em nova janela", accelerator="Ctrl+Shift+N", command=self.abrir_em_nova_janela)
         menu.tk_popup(evento.x_root, evento.y_root)
 
     # ------------------------------------------------------------------ teclado

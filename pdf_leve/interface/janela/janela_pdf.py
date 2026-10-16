@@ -2,7 +2,6 @@
 
 import re
 import tkinter as tk
-from collections import OrderedDict
 
 from pdf_leve.configuracao.constantes import (
     COR_ANOTACAO_PADRAO, NOME_APLICATIVO, TAMANHO_FONTE_PADRAO,
@@ -23,7 +22,8 @@ DESLOCAMENTO_CASCATA = 32  # px entre janelas abertas em sequência
 class JanelaPdf(MixinBarraFerramentas, MixinArquivo, MixinVisualizacao, MixinMouse,
                 MixinSelecaoTexto, MixinAnotacoes, MixinBusca, tk.Toplevel):
 
-    def __init__(self, aplicativo, caminho=None, perto_de=None):
+    def __init__(self, aplicativo, caminho=None, perto_de=None, aberto=None, ancora=None):
+        """Abre `caminho` ou, com `aberto`, mais uma vista de um documento já aberto (em `ancora`)."""
         super().__init__(aplicativo)
         self.withdraw()
         self.aplicativo = aplicativo
@@ -33,14 +33,8 @@ class JanelaPdf(MixinBarraFerramentas, MixinArquivo, MixinVisualizacao, MixinMou
         self.configure(bg=COR_FUNDO)
         self._definir_geometria(perto_de)
 
-        # documento
-        self.documento = None
-        self.caminho = None
-        self.senha = None
-        self.modificado = False
-        self.id_documento = 0             # único entre janelas; descarta resultados de documentos antigos
-        self.retangulos_paginas = []
-        self.versao_pagina = []           # muda ao girar/anotar (invalida a imagem da página)
+        # documento (compartilhado com as outras janelas que exibem o mesmo arquivo)
+        self.aberto = None                # DocumentoAberto
 
         # visualização e renderização
         self.zoom = self.preferencias.get("zoom", 1.0)
@@ -48,11 +42,7 @@ class JanelaPdf(MixinBarraFerramentas, MixinArquivo, MixinVisualizacao, MixinMou
         self.escala_base = self.winfo_fpixels("1i") / 72  # pixels por ponto PDF a 100%
         self.disposicao = []              # (x, y, largura, altura) de cada página na tela
         self.largura_total = self.altura_total = 1
-        self.paginas_locais = set()       # anotadas e ainda não salvas: renderizadas neste processo
-        self.cache_imagens = OrderedDict()  # chave -> PhotoImage (LRU)
-        self.pixels_em_cache = 0
         self.itens_na_tela = {}           # página -> (chave, item do canvas, PhotoImage)
-        self.em_renderizacao = set()      # chaves pedidas aos processos auxiliares
         self.fila_pedidos = []            # (chave, página) por prioridade
         self._ultima_primeira_visivel = 0
         self._navegacao = None            # (página, posição) do último salto de página
@@ -68,7 +58,6 @@ class JanelaPdf(MixinBarraFerramentas, MixinArquivo, MixinVisualizacao, MixinMou
         self.arraste = None               # anotação sendo movida
         self.movendo_pagina = False
         self.painel_estilo = None
-        self.cache_palavras = OrderedDict()  # página -> palavras (texto selecionável)
         self.selecao_texto = None         # ((página, palavra), (página, palavra))
         self.selecionando = None
         self._imagens_selecao = {}
@@ -81,7 +70,9 @@ class JanelaPdf(MixinBarraFerramentas, MixinArquivo, MixinVisualizacao, MixinMou
         barra_titulo_escura(self)
         self.deiconify()
         aceitar_arquivos_arrastados(self, self.ao_soltar_arquivos)
-        if caminho:
+        if aberto:
+            self.after(60, lambda: self.exibir(aberto, ancora))
+        elif caminho:
             self.after(60, lambda: self.carregar(caminho))
 
     def _definir_geometria(self, perto_de):
@@ -102,6 +93,25 @@ class JanelaPdf(MixinBarraFerramentas, MixinArquivo, MixinVisualizacao, MixinMou
     @property
     def renderizadores(self):
         return self.aplicativo.renderizadores
+
+    # Estado do documento, lido do DocumentoAberto (é o mesmo em todas as vistas do arquivo).
+    def _do_documento(nome, vazio):
+        def ler(self):
+            return getattr(self.aberto, nome) if self.aberto else vazio()
+        return property(ler)
+
+    documento = _do_documento("documento", lambda: None)
+    caminho = _do_documento("caminho", lambda: None)
+    senha = _do_documento("senha", lambda: None)
+    modificado = _do_documento("modificado", lambda: False)
+    id_documento = _do_documento("id_documento", lambda: 0)
+    versao_pagina = _do_documento("versao_pagina", list)
+    retangulos_paginas = _do_documento("retangulos_paginas", list)
+    paginas_locais = _do_documento("paginas_locais", set)
+    cache_palavras = _do_documento("cache_palavras", dict)
+    cache_imagens = _do_documento("cache_imagens", dict)
+    em_renderizacao = _do_documento("em_renderizacao", set)
+    del _do_documento
 
     # Os temporizadores ficam no Aplicativo: um temporizador pendente de uma janela já fechada
     # simplesmente não roda (em vez de gerar erro do Tk). Os nomes seguem a API do tkinter.

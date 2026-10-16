@@ -1,5 +1,5 @@
-"""Aplicativo: raiz invisível do Tk que gerencia as janelas (uma por PDF), os processos de
-renderização compartilhados e os arquivos recebidos de novas execuções do programa."""
+"""Aplicativo: raiz invisível do Tk que gerencia as janelas (um mesmo PDF pode estar em várias),
+os processos de renderização compartilhados e os arquivos recebidos de novas execuções do programa."""
 
 import os
 import tkinter as tk
@@ -42,8 +42,10 @@ class Aplicativo(tk.Tk):
         self._ultimo_id_documento += 1
         return self._ultimo_id_documento
 
-    def janela_do_documento(self, id_documento):
-        return next((janela for janela in self.janelas if janela.id_documento == id_documento), None)
+    def documento_do_id(self, id_documento):
+        """DocumentoAberto com esse id (exibido em alguma janela), ou None."""
+        return next((janela.aberto for janela in self.janelas
+                     if janela.aberto and janela.aberto.id_documento == id_documento), None)
 
     def janelas_por_prioridade(self):
         """A janela em foco primeiro: a página que o usuário está lendo é renderizada antes."""
@@ -51,35 +53,35 @@ class Aplicativo(tk.Tk):
         janela_em_foco = foco.winfo_toplevel() if foco else None
         return sorted(self.janelas, key=lambda janela: janela is not janela_em_foco)
 
-    def nova_janela(self, caminho=None, perto_de=None):
-        janela = JanelaPdf(self, caminho, perto_de)
+    def nova_janela(self, caminho=None, perto_de=None, aberto=None, ancora=None):
+        janela = JanelaPdf(self, caminho, perto_de, aberto, ancora)
         self.janelas.append(janela)
         return janela
 
     def abrir_arquivos(self, caminhos, origem=None):
         """Abre cada PDF numa janela nova (ou na janela de origem, se ela estiver vazia).
-        Um arquivo que já está aberto apenas traz a janela dele para a frente.
-        Sem caminhos, abre uma janela vazia."""
+        Um arquivo que já está aberto ganha mais uma janela, que compartilha o documento com as
+        outras. Sem caminhos, abre uma janela vazia."""
         if not caminhos:
             trazer_para_frente(self.nova_janela(perto_de=origem))
             return
         for caminho in caminhos:
             caminho = os.path.abspath(caminho)
-            janela = self._janela_do_arquivo(caminho)
-            if janela:
-                trazer_para_frente(janela)
-                continue
+            aberto = self._documento_do_arquivo(caminho)
             if origem is not None and not origem.fechada and origem.documento is None:
-                origem.carregar(caminho)
+                if aberto:
+                    origem.exibir(aberto)
+                else:
+                    origem.carregar(caminho)
                 janela, origem = origem, None
             else:
                 vizinha = origem or (self.janelas[-1] if self.janelas else None)
-                janela = self.nova_janela(caminho, perto_de=vizinha)
+                janela = self.nova_janela(None if aberto else caminho, perto_de=vizinha, aberto=aberto)
             trazer_para_frente(janela)
 
-    def _janela_do_arquivo(self, caminho):
+    def _documento_do_arquivo(self, caminho):
         normalizado = os.path.normcase(caminho)
-        return next((janela for janela in self.janelas
+        return next((janela.aberto for janela in self.janelas
                      if janela.caminho and os.path.normcase(janela.caminho) == normalizado), None)
 
     def janela_fechada(self, janela):

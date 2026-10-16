@@ -30,7 +30,7 @@ DURACAO_AVISO_MS = 2600
 
 # ------------------------------------------------------------------ renderização
 PROCESSOS_RENDERIZACAO = 2        # processos auxiliares que renderizam páginas em paralelo
-LIMITE_PIXELS_CACHE = 16_000_000  # cache de páginas prontas por janela (~64 MB)
+LIMITE_PIXELS_CACHE = 16_000_000  # cache de páginas prontas por documento (~64 MB)
 PAGINAS_PRE_CARREGADAS = 4        # páginas preparadas à frente na direção da leitura
 RENDERIZACOES_ENTRE_LIMPEZAS = 4  # a cada N páginas, esvazia o depósito de imagens do MuPDF
 LIMITE_CACHE_PALAVRAS = 80        # páginas com palavras (texto selecionável) em memória

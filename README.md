@@ -74,6 +74,7 @@ Também é possível executar como módulo: `python -m pdf_leve arquivo.pdf`.
 | Atalho | Ação |
 |---|---|
 | `Ctrl+O` / `Ctrl+N` | Abrir PDFs (vários de uma vez) / nova janela vazia |
+| `Ctrl+Shift+N` | Abrir o mesmo PDF em outra janela (as alterações valem para as duas) |
 | `Ctrl+S` / `Ctrl+Shift+S` | Salvar / salvar como |
 | `Ctrl+P` | Salvar páginas em um novo PDF |
 | `→` / `←` | Próxima / página anterior |

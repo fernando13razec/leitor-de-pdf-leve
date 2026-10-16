@@ -81,8 +81,10 @@ class ConjuntoRenderizadores:
     """Processos auxiliares de renderização, compartilhados por todas as janelas.
 
     `aplicativo` deve oferecer: `after(ms, funcao)`, `janelas`, `janelas_por_prioridade()` e
-    `janela_do_documento(id)`. Cada janela oferece `proximo_pedido()`, `receber_imagem(...)`,
-    `renderizar_visiveis()`, `agendar_renderizacao()` e o conjunto `em_renderizacao`.
+    `documento_do_id(id)`. Cada janela oferece `proximo_pedido()`, `renderizar_visiveis()`,
+    `agendar_renderizacao()` e o conjunto `em_renderizacao`. O documento (que pode estar em várias
+    janelas) oferece o mesmo conjunto `em_renderizacao`, compartilhado por suas janelas, e
+    `receber_imagem(chave, largura, altura, amostras)`, que retorna as janelas atualizadas.
     Se os processos não puderem ser criados, `disponivel` é False e as janelas renderizam
     no próprio processo.
     """
@@ -146,12 +148,12 @@ class ConjuntoRenderizadores:
             return
         chave = mensagem[1]
         processo[2] = None
-        janela = self.aplicativo.janela_do_documento(chave[0])
-        if not janela:
+        documento = self.aplicativo.documento_do_id(chave[0])
+        if not documento:
             return
-        janela.em_renderizacao.discard(chave)
-        if mensagem[0] == "imagem" and janela.receber_imagem(chave, *mensagem[2:]):
-            atualizadas.add(janela)
+        documento.em_renderizacao.discard(chave)
+        if mensagem[0] == "imagem":
+            atualizadas.update(documento.receber_imagem(chave, *mensagem[2:]))
 
     def receber(self):
         """Recebe as páginas prontas e as entrega às janelas correspondentes."""
