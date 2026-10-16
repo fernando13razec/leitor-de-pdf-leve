@@ -72,7 +72,8 @@ def fonte_icone(tamanho):
 GLIFOS = {
     "abrir": ("\uE8E5", "Abrir"),
     "salvar": ("\uE74E", "Salvar"),
-    "imprimir": ("\uE749", "Páginas"),
+    "exportar": ("\uE792", "Páginas"),
+    "imprimir": ("\uE749", "Imprimir"),
     "anterior": ("\uE76B", "‹"),
     "proxima": ("\uE76C", "›"),
     "diminuir_zoom": ("\uE71F", "−"),

@@ -8,6 +8,7 @@
     selecao_texto.py      seleção e cópia do texto das páginas
     anotacoes.py          criar, editar, mover e excluir anotações; cor e tamanho
     busca.py              busca de texto em segundo plano
+    impressao.py          impressão (diálogo do Windows e processo de impressão)
 """
 
 from pdf_leve.interface.janela.janela_pdf import JanelaPdf

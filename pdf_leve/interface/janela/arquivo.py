@@ -206,6 +206,7 @@ class MixinArquivo:
                                  ajuste=self.modo_ajuste, zoom=self.zoom)
         salvar_preferencias(self.preferencias)
         self.geracao_busca += 1
+        self.abandonar_impressao()
         self.fechada = True
         if self.painel_estilo:
             self.painel_estilo.fechar()

@@ -35,6 +35,11 @@ PAGINAS_PRE_CARREGADAS = 4        # páginas preparadas à frente na direção d
 RENDERIZACOES_ENTRE_LIMPEZAS = 4  # a cada N páginas, esvazia o depósito de imagens do MuPDF
 LIMITE_CACHE_PALAVRAS = 80        # páginas com palavras (texto selecionável) em memória
 
+# ------------------------------------------------------------------ impressão
+DPI_MAXIMO_IMPRESSAO = 300                # resolução das imagens das páginas enviadas à impressora
+MAXIMO_INTERVALOS_IMPRESSAO = 16          # intervalos de páginas aceitos no diálogo de impressão
+INTERVALO_VERIFICACAO_IMPRESSAO_MS = 200  # leitura do progresso enviado pelo processo de impressão
+
 # ------------------------------------------------------------------ anotações
 FONTE_ANOTACAO = "helv"  # Helvetica padrão do PDF (cobre o português)
 CORES_ANOTACAO = {

@@ -16,9 +16,11 @@ pdf_leve/
 │   ├── texto.py               palavras, linhas visuais, texto selecionado
 │   ├── intervalos.py          “1-5, 8, 11-13” → páginas
 │   ├── busca.py               vários termos (“multa; prazo”): separação, ocorrências em ordem de leitura
+│   ├── impressao.py           páginas a imprimir, encaixe no papel, processo de impressão
 │   └── instancia_unica.py     entrega de arquivos a um programa já aberto
 ├── sistema/
-│   └── windows.py             barra de título escura, arrastar arquivos, DPI, ID na barra de tarefas
+│   ├── windows.py             barra de título escura, arrastar arquivos, DPI, ID na barra de tarefas
+│   └── impressora.py          diálogo de impressão do Windows (PrintDlgEx) e envio à impressora (GDI)
 └── interface/
     ├── aplicativo.py          raiz Tk invisível: janelas, renderizadores, servidor de instância única
     ├── utilidades.py          plural, centralizar, imagens (PPM e PNG com transparência)
@@ -32,7 +34,7 @@ Os serviços não importam nada da interface.
 
 ## A janela (`interface/janela/`)
 
-`JanelaPdf` herda de `tk.Toplevel` e de sete mixins; cada um cuida de um assunto e todos
+`JanelaPdf` herda de `tk.Toplevel` e de oito mixins; cada um cuida de um assunto e todos
 compartilham o estado criado em `JanelaPdf.__init__`:
 
 | Mixin | Responsabilidade |
@@ -44,6 +46,7 @@ compartilham o estado criado em `JanelaPdf.__init__`:
 | `selecao_texto.py` | seleção e cópia de texto |
 | `anotacoes.py` | criar/editar/mover/excluir anotações, cor e tamanho |
 | `busca.py` | busca em etapas (um ou vários termos, uma cor por termo), contador e navegação entre resultados |
+| `impressao.py` | diálogo de impressão e acompanhamento do processo de impressão |
 
 ## Renderização
 
@@ -71,6 +74,21 @@ auxiliares que o fechem e espera a confirmação, porque o Windows não substitu
 
 O MuPDF guarda imagens decodificadas sem limite prático; `aparar_deposito_mupdf` esvazia esse
 depósito a cada `RENDERIZACOES_ENTRE_LIMPEZAS` páginas.
+
+## Impressão
+
+`imprimir` abre o diálogo padrão do Windows (`escolher_impressora`, via `PrintDlgExW`), que
+devolve a impressora, as configurações do driver (DEVMODE: cópias, papel, orientação…) e as
+páginas escolhidas. A impressão roda num **processo próprio** (`processo_impressor`), que recebe o
+caminho do arquivo ou, se houver alterações não salvas, o PDF em bytes (`documento.tobytes()`):
+
+1. cria o contexto da impressora (`CreateDCW` com o DEVMODE) e inicia o trabalho (`StartDocW`);
+2. para cada página, calcula o encaixe no papel (`calcular_encaixe`: tamanho real, reduzido se não
+   couber na área imprimível, centralizado e girado 90° se a orientação diferir da do papel);
+3. renderiza a página com o PyMuPDF (até `DPI_MAXIMO_IMPRESSAO`) e a desenha com `StretchDIBits`.
+
+O progresso volta por um `Pipe` lido com `after`. Se a janela for fechada, a conexão é encerrada e
+a impressão continua até o fim sem informar o progresso.
 
 ## Ícones
 

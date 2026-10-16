@@ -47,7 +47,8 @@ class MixinBarraFerramentas:
         BotaoIcone(barra, "abrir", self.abrir_arquivo, "Abrir PDF (Ctrl+O) · nova janela: Ctrl+N").pack(side="left")
         self.botao_salvar = BotaoIcone(barra, "salvar", self.salvar, "Salvar (Ctrl+S)")
         self.botao_salvar.pack(side="left")
-        BotaoIcone(barra, "imprimir", self.exportar_paginas, "Salvar páginas em PDF (Ctrl+P)").pack(side="left")
+        BotaoIcone(barra, "exportar", self.exportar_paginas, "Salvar páginas em PDF (Ctrl+P)").pack(side="left")
+        BotaoIcone(barra, "imprimir", self.imprimir, "Imprimir (Ctrl+Shift+P)").pack(side="left")
         divisoria()
 
         # navegação
@@ -196,7 +197,7 @@ class MixinBarraFerramentas:
         self.bind("<Control-s>", lambda e: self.salvar())
         self.bind("<Control-S>", lambda e: self.salvar_como())
         self.bind("<Control-p>", lambda e: self.exportar_paginas())
-        self.bind("<Control-P>", lambda e: self.exportar_paginas())
+        self.bind("<Control-P>", lambda e: self.imprimir())
         self.bind("<Control-f>", lambda e: self.focar_busca())
         self.bind("<Control-plus>", lambda e: self.definir_zoom(self.zoom * PASSO_ZOOM))
         self.bind("<Control-equal>", lambda e: self.definir_zoom(self.zoom * PASSO_ZOOM))

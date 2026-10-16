@@ -12,6 +12,7 @@ from pdf_leve.interface.janela.anotacoes import MixinAnotacoes
 from pdf_leve.interface.janela.arquivo import MixinArquivo
 from pdf_leve.interface.janela.barra_ferramentas import MixinBarraFerramentas
 from pdf_leve.interface.janela.busca import MixinBusca
+from pdf_leve.interface.janela.impressao import MixinImpressao
 from pdf_leve.interface.janela.mouse import MixinMouse
 from pdf_leve.interface.janela.selecao_texto import MixinSelecaoTexto
 from pdf_leve.interface.janela.visualizacao import MixinVisualizacao
@@ -21,7 +22,7 @@ DESLOCAMENTO_CASCATA = 32  # px entre janelas abertas em sequência
 
 
 class JanelaPdf(MixinBarraFerramentas, MixinArquivo, MixinVisualizacao, MixinMouse,
-                MixinSelecaoTexto, MixinAnotacoes, MixinBusca, tk.Toplevel):
+                MixinSelecaoTexto, MixinAnotacoes, MixinBusca, MixinImpressao, tk.Toplevel):
 
     def __init__(self, aplicativo, caminho=None, perto_de=None):
         super().__init__(aplicativo)
@@ -41,6 +42,7 @@ class JanelaPdf(MixinBarraFerramentas, MixinArquivo, MixinVisualizacao, MixinMou
         self.id_documento = 0             # único entre janelas; descarta resultados de documentos antigos
         self.retangulos_paginas = []
         self.versao_pagina = []           # muda ao girar/anotar (invalida a imagem da página)
+        self.impressao = None             # (conexão, processo) da impressão em andamento
 
         # visualização e renderização
         self.zoom = self.preferencias.get("zoom", 1.0)

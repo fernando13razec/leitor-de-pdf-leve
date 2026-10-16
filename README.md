@@ -29,6 +29,7 @@ páginas escaneadas — abrindo rápido e sem travar a tela.
 - **Busca em segundo plano** com contador de ocorrências (“3 de 27”). Vários termos de uma vez,
   separados por ponto e vírgula (`multa; prazo de entrega`), cada um destacado com uma cor.
 - **Salvar páginas em PDF** (todas, a atual ou intervalos como `1-5, 8, 11-13`).
+- **Impressão** pelo diálogo padrão do Windows, com as anotações ainda não salvas.
 - **Girar páginas**, **tela cheia**, **página inteira** / **ajuste à largura**.
 - **Arrastar e soltar** arquivos na janela.
 - Tema escuro, interface minimalista, barra de título escura no Windows 10/11.
@@ -76,6 +77,7 @@ Também é possível executar como módulo: `python -m pdf_leve arquivo.pdf`.
 | `Ctrl+O` / `Ctrl+N` | Abrir PDFs (vários de uma vez) / nova janela vazia |
 | `Ctrl+S` / `Ctrl+Shift+S` | Salvar / salvar como |
 | `Ctrl+P` | Salvar páginas em um novo PDF |
+| `Ctrl+Shift+P` | Imprimir |
 | `→` / `←` | Próxima / página anterior |
 | `↓` / `↑`, `PageDown` / `PageUp` | Rolar |
 | `Home` / `End` | Primeira / última página |
