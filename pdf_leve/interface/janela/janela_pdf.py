@@ -11,6 +11,7 @@ from pdf_leve.interface.janela.anotacoes import MixinAnotacoes
 from pdf_leve.interface.janela.arquivo import MixinArquivo
 from pdf_leve.interface.janela.barra_ferramentas import MixinBarraFerramentas
 from pdf_leve.interface.janela.busca import MixinBusca
+from pdf_leve.interface.janela.impressao import MixinImpressao
 from pdf_leve.interface.janela.mouse import MixinMouse
 from pdf_leve.interface.janela.selecao_texto import MixinSelecaoTexto
 from pdf_leve.interface.janela.visualizacao import MixinVisualizacao
@@ -20,7 +21,7 @@ DESLOCAMENTO_CASCATA = 32  # px entre janelas abertas em sequência
 
 
 class JanelaPdf(MixinBarraFerramentas, MixinArquivo, MixinVisualizacao, MixinMouse,
-                MixinSelecaoTexto, MixinAnotacoes, MixinBusca, tk.Toplevel):
+                MixinSelecaoTexto, MixinAnotacoes, MixinBusca, MixinImpressao, tk.Toplevel):
 
     def __init__(self, aplicativo, caminho=None, perto_de=None, aberto=None, ancora=None):
         """Abre `caminho` ou, com `aberto`, mais uma vista de um documento já aberto (em `ancora`)."""
@@ -35,6 +36,7 @@ class JanelaPdf(MixinBarraFerramentas, MixinArquivo, MixinVisualizacao, MixinMou
 
         # documento (compartilhado com as outras janelas que exibem o mesmo arquivo)
         self.aberto = None                # DocumentoAberto
+        self.impressao = None             # (conexão, processo) da impressão em andamento nesta janela
 
         # visualização e renderização
         self.zoom = self.preferencias.get("zoom", 1.0)

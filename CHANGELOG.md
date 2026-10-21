@@ -8,6 +8,14 @@
   está aberto. Cada janela tem rolagem, zoom e busca próprios; anotações e rotações aparecem em
   todas, e salvar em qualquer uma salva o documento. Só a última janela do arquivo pergunta se as
   alterações devem ser salvas.
+- Impressão (`Ctrl+Shift+P` ou botão de impressora): usa o diálogo de impressão padrão do Windows
+  (impressora, cópias, intervalo de páginas, propriedades do driver) e imprime o documento como
+  está na tela, inclusive com anotações e rotações ainda não salvas. As páginas são centralizadas
+  no papel, reduzidas quando não cabem e giradas quando a orientação difere da do papel. A
+  impressão roda em segundo plano, com o progresso no rodapé.
+
+### Alterado
+- O botão “Salvar páginas em PDF” (`Ctrl+P`) ganhou ícone próprio; o de impressora agora imprime.
 
 ## [1.0.2] - 2026-10-02
 
