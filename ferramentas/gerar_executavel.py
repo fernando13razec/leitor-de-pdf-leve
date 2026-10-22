@@ -33,7 +33,12 @@ ARQUIVO_VERSAO = PASTA_TRABALHO / "versao_windows.txt"
 ZIP_SAIDA = PASTA_SAIDA / f"PDF-Leve-{VERSAO}-windows-x64.zip"
 
 # Módulos que o PyInstaller poderia incluir por engano e que o programa não usa.
-MODULOS_EXCLUIDOS = ["PIL", "numpy", "pytest", "unittest", "pydoc", "test", "lib2to3", "pymupdf.mupdf_cppyy"]
+# O PyMuPDF importa `PIL` (Pixmap.pil_save), `pandas` (Table.to_pandas) e `fontTools`
+# (Document.subset_fonts) só dentro dessas funções, que o programa não chama. Num Python com
+# muitos pacotes instalados, o `pandas` puxa `scipy`, que puxa `torch`, `transformers`, `cv2`…
+# (centenas de MB); por isso ele e os demais ficam de fora.
+MODULOS_EXCLUIDOS = ["PIL", "pandas", "fontTools", "numpy", "pytest", "unittest", "pydoc", "test", "lib2to3",
+                     "pymupdf.mupdf_cppyy"]
 
 
 def escrever_informacoes_de_versao():
