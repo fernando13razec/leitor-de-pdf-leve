@@ -22,6 +22,8 @@ A arquitetura está descrita em `docs/arquitetura.md`; leia antes de mudanças e
 - **Glifos** das fontes de ícones do Windows ficam como escapes `\uXXXX` em `tema.py`. Algumas
   ferramentas de edição convertem escapes em caracteres invisíveis; confira depois de editar.
 - **Atalhos de teclas numéricas** no Tk usam `<Control-Key-1>` (não `<Control-1>`, que é o mouse).
+- **Roda do mouse**: ligue com `ligar_roda` (`pdf_leve/interface/utilidades.py`), nunca só com
+  `bind("<MouseWheel>")`. No Tk 9, touchpads e mouses de rolagem suave geram `<TouchpadScroll>`.
 - Nunca chame o tkinter fora da thread principal nem de dentro de callbacks do Windows (ctypes);
   use filas lidas pelo laço do Tk.
 - Não bloqueie o laço do Tk: operações longas devem ser feitas em etapas (`after`) ou nos
@@ -60,3 +62,7 @@ PDF Leve e substitua `PDF Leve.exe` e `_internal` pelos de `dist/PDF Leve/` (man
 - `iniciar.pyw` precisa do `if __name__ == "__main__"`: os processos de renderização (spawn)
   reimportam o arquivo principal.
 - Não versione PDFs reais de usuários (podem conter dados sensíveis); use PDFs gerados nos testes.
+- O executável da Release pode usar outro Tk que o gerado neste PC. A CI usa o Python 3.14 mais
+  recente, que traz o Tk 9; o Python 3.14.3 deste PC traz o Tk 8.6 (confira com
+  `python -c "import tkinter; print(tkinter.TkVersion)"`). Mudanças de mouse, teclado ou janelas
+  devem ser testadas também no executável da CI (fluxo “Release” manual, que gera um artefato).

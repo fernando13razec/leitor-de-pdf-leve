@@ -10,13 +10,14 @@ from pdf_leve.configuracao.tema import (
     COR_TEXTO_APAGADO, COR_TEXTO_SUAVE, fonte_icone, fontes, glifo,
 )
 from pdf_leve.interface.componentes import BotaoPlano
-from pdf_leve.interface.utilidades import centralizar, executar_em_segundo_plano
+from pdf_leve.interface.utilidades import centralizar, executar_em_segundo_plano, ligar_roda, passos_da_roda
 from pdf_leve.servicos.assinatura import apto_para_assinar, descrever_titular
 from pdf_leve.sistema.certificados import listar_certificados
 from pdf_leve.sistema.windows import barra_titulo_escura
 
 LARGURA_LISTA = 470
 ALTURA_LISTA = 210
+DELTA_RODA_POR_UNIDADE_LISTA = 120  # um clique da roda rola uma unidade da lista
 FORMATO_DIA = "%d/%m/%Y"
 FORMATO_DATA_HORA = "%d/%m/%Y às %H:%M:%S"
 
@@ -63,13 +64,19 @@ def _lista_rolavel(mestre, altura):
     quadro = tk.Frame(tela, bg=COR_CAMPO)
     tela.create_window(0, 0, window=quadro, anchor="nw", width=LARGURA_LISTA)
     quadro.bind("<Configure>", lambda e: tela.config(scrollregion=(0, 0, LARGURA_LISTA, quadro.winfo_reqheight())))
-    tela.bind("<MouseWheel>", lambda e: tela.yview_scroll(-round(e.delta / 120) or 0, "units"))
+    ligar_roda(tela, lambda evento, delta_x, delta_y: _rolar_lista(tela, delta_y))
     return moldura, quadro, tela
+
+
+def _rolar_lista(tela, delta):
+    passos = passos_da_roda(delta, DELTA_RODA_POR_UNIDADE_LISTA)
+    if passos:
+        tela.yview_scroll(passos, "units")
 
 
 def _repassar_roda(widget, tela):
     """A roda do mouse sobre qualquer item da lista rola a lista."""
-    widget.bind("<MouseWheel>", lambda e: tela.yview_scroll(-round(e.delta / 120) or 0, "units"))
+    ligar_roda(widget, lambda evento, delta_x, delta_y: _rolar_lista(tela, delta_y))
     for filho in widget.winfo_children():
         _repassar_roda(filho, tela)
 

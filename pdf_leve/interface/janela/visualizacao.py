@@ -13,13 +13,14 @@ import bisect
 import pymupdf
 
 from pdf_leve.configuracao.constantes import (
-    ESPACO_ENTRE_PAGINAS, PAGINAS_PRE_CARREGADAS, PASSO_ZOOM_RODA, ZOOM_MAXIMO, ZOOM_MINIMO,
+    DELTA_RODA_POR_UNIDADE, ESPACO_ENTRE_PAGINAS, PAGINAS_PRE_CARREGADAS, PASSO_ZOOM_RODA, ZOOM_MAXIMO,
+    ZOOM_MINIMO,
 )
 from pdf_leve.configuracao.tema import (
     COR_CARREGANDO, COR_CONTORNO_ANOTACAO, COR_PAGINA, COR_RESULTADO_ATUAL, COR_SOMBRA_PAGINA,
     CORES_TERMOS_BUSCA, fontes,
 )
-from pdf_leve.interface.utilidades import imagem_ppm
+from pdf_leve.interface.utilidades import imagem_ppm, passos_da_roda
 from pdf_leve.servicos.anotacoes import retangulo_exibido
 from pdf_leve.servicos.renderizacao import aparar_deposito_mupdf, renderizar_pagina
 
@@ -225,15 +226,23 @@ class MixinVisualizacao:
         self.agendar_renderizacao()
 
     def _rolar(self, eixo, delta):
-        passos = -round(delta / 40) or (-1 if delta > 0 else 1)  # touchpads mandam deltas pequenos
-        (self._rolar_vertical if eixo == "y" else self._rolar_horizontal)("scroll", passos, "units")
+        passos = passos_da_roda(delta, DELTA_RODA_POR_UNIDADE)
+        if passos:
+            (self._rolar_vertical if eixo == "y" else self._rolar_horizontal)("scroll", passos, "units")
 
-    def _ao_girar_roda(self, evento):
-        self._rolar("y", evento.delta)
+    # A roda é ligada com `ligar_roda`, que também trata a rolagem de alta resolução do Tk 9.
+    def _ao_girar_roda(self, evento, delta_x, delta_y):
+        self._rolar("y", delta_y)
+        self._rolar("x", delta_x)
 
-    def _ao_girar_roda_com_ctrl(self, evento):
-        fator = PASSO_ZOOM_RODA if evento.delta > 0 else 1 / PASSO_ZOOM_RODA
-        self.definir_zoom(self.zoom * fator, no_ponto=(evento.x, evento.y))
+    def _ao_girar_roda_com_shift(self, evento, delta_x, delta_y):
+        self._rolar("x", delta_y or delta_x)
+
+    def _ao_girar_roda_com_ctrl(self, evento, delta_x, delta_y):
+        delta = delta_y or delta_x
+        if delta:
+            fator = PASSO_ZOOM_RODA if delta > 0 else 1 / PASSO_ZOOM_RODA
+            self.definir_zoom(self.zoom * fator, no_ponto=(evento.x, evento.y))
 
     def _ao_redimensionar(self, evento):
         if not self.documento:

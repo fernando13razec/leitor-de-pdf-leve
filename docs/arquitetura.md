@@ -186,6 +186,11 @@ uma nova janela; se o arquivo já estiver aberto, a nova janela é mais uma vist
 - **Barra de título escura**: `DwmSetWindowAttribute` (modo escuro e, no Windows 11, a cor exata).
 - **Atalhos numéricos**: no Tk, `<Control-1>` significa Ctrl + botão 1 do mouse; para a tecla,
   use `<Control-Key-1>`.
+- **Roda do mouse**: no Tk 9, deltas que não são múltiplos de 120 viram `<TouchpadScroll>` em vez
+  de `<MouseWheel>`. Esses deltas vêm de touchpads e de mouses de rolagem suave, e depois deles até
+  o clique seguinte da roda chega assim. O evento traz os deltas X e Y juntos no `%D`. A função
+  `ligar_roda` (`interface/utilidades.py`) liga os dois eventos e entrega os deltas já separados.
+  O Tk 8.6 não tem `<TouchpadScroll>` e entrega tudo como `<MouseWheel>`.
 - **Temporizadores**: `JanelaPdf.after` agenda no `Aplicativo`, e o callback só roda se a janela
   ainda estiver aberta. Isso evita erros de temporizadores pendentes de janelas fechadas.
 

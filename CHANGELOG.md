@@ -1,5 +1,14 @@
 # Histórico de versões
 
+## [Não lançado]
+
+### Corrigido
+- A roda do mouse não rolava o documento no programa baixado da Release quando o aparelho tinha
+  rolagem de alta resolução: touchpads de notebook e mouses com rolagem suave (como os Logitech MX).
+  O Tk 9, usado no executável da Release, entrega esses movimentos como um evento próprio, que o
+  programa ignorava. Mouses comuns não eram afetados. A correção vale também para o zoom com
+  `Ctrl` + roda e para a lista de certificados da assinatura, que nesses aparelhos também não rolava.
+
 ## [1.0.3] - 2026-11-26
 
 ### Adicionado

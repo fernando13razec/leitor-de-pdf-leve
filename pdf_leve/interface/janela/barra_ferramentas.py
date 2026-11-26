@@ -15,6 +15,7 @@ from pdf_leve.configuracao.tema import (
 )
 from pdf_leve.interface.componentes import BotaoIcone, Dica
 from pdf_leve.interface.dialogos import DialogoMensagem
+from pdf_leve.interface.utilidades import ligar_roda
 
 
 class MixinBarraFerramentas:
@@ -165,9 +166,9 @@ class MixinBarraFerramentas:
     def _ligar_atalhos(self):
         tela = self.tela
         tela.bind("<Configure>", self._ao_redimensionar)
-        tela.bind("<MouseWheel>", self._ao_girar_roda)
-        tela.bind("<Shift-MouseWheel>", lambda e: self._rolar("x", e.delta))
-        tela.bind("<Control-MouseWheel>", self._ao_girar_roda_com_ctrl)
+        ligar_roda(tela, self._ao_girar_roda)
+        ligar_roda(tela, self._ao_girar_roda_com_shift, "Shift")
+        ligar_roda(tela, self._ao_girar_roda_com_ctrl, "Control")
         tela.bind("<ButtonPress-1>", self._ao_pressionar)
         tela.bind("<B1-Motion>", self._ao_arrastar)
         tela.bind("<ButtonRelease-1>", self._ao_soltar_botao)

@@ -25,6 +25,7 @@ PASSO_ZOOM = 1.2                # botões e Ctrl +/−
 PASSO_ZOOM_RODA = 1.1           # Ctrl + roda do mouse
 LINHAS_POR_SETA = 3             # unidades roladas por ↑/↓
 PIXELS_POR_UNIDADE_ROLAGEM = 20
+DELTA_RODA_POR_UNIDADE = 40     # um clique da roda (delta 120 no Windows) rola 3 unidades
 MARGEM_ROLAGEM_AUTOMATICA = 24  # px da borda que fazem a seleção de texto rolar a tela
 DURACAO_AVISO_MS = 2600
 
