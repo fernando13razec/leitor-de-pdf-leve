@@ -107,6 +107,9 @@ python ferramentas/gerar_icone.py               # recria o ícone (vermelho, “
 python ferramentas/gerar_executavel.py          # gera dist/PDF Leve/ e o .zip da Release
 ```
 
+O executável é gerado com o Python da versão fixada em `.python-version`, a mesma que o GitHub
+Actions usa na Release; com outra versão, `gerar_executavel.py` para com um erro.
+
 A organização do código está descrita em [docs/arquitetura.md](docs/arquitetura.md).
 
 **Lançar uma versão:** atualize `VERSAO` em `pdf_leve/configuracao/constantes.py`, descreva as

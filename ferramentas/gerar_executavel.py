@@ -1,6 +1,7 @@
 """Gera o executável do PDF Leve para Windows (PyInstaller) e o .zip para a Release.
 
-Como rodar (a partir da raiz do projeto, num ambiente com `pip install -r requirements-dev.txt`):
+Como rodar (a partir da raiz do projeto, com o Python da versão fixada em `.python-version` e
+`pip install -r requirements-dev.txt`):
 
     python ferramentas/gerar_executavel.py                     # executável + zip
     python ferramentas/gerar_executavel.py --etapa executavel  # só o executável
@@ -17,6 +18,7 @@ precisa se descompactar a cada abertura (nem nos processos auxiliares de renderi
 
 import argparse
 import hashlib
+import platform
 import shutil
 import sys
 import zipfile
@@ -31,6 +33,8 @@ PASTA_TRABALHO = RAIZ_PROJETO / "build"
 PASTA_SAIDA = RAIZ_PROJETO / "dist"
 ARQUIVO_VERSAO = PASTA_TRABALHO / "versao_windows.txt"
 ZIP_SAIDA = PASTA_SAIDA / f"PDF-Leve-{VERSAO}-windows-x64.zip"
+# Versão do Python que gera o executável, neste PC e no GitHub Actions (que lê o mesmo arquivo).
+ARQUIVO_VERSAO_PYTHON = RAIZ_PROJETO / ".python-version"
 
 # Módulos que o PyInstaller poderia incluir por engano e que o programa não usa.
 # O PyMuPDF importa `PIL` (Pixmap.pil_save), `pandas` (Table.to_pandas) e `fontTools`
@@ -42,6 +46,24 @@ MODULOS_EXCLUIDOS = ["PIL", "pandas", "fontTools", "numpy", "pytest", "unittest"
 # O pyHanko (assinatura digital) importa partes sob demanda (ex.: cliente HTTP do carimbo de tempo),
 # que a análise automática do PyInstaller não enxerga.
 PACOTES_COMPLETOS = ["pyhanko", "pyhanko_certvalidator"]
+
+
+def conferir_versao_do_python():
+    """Para com um erro se este Python não for o fixado em .python-version.
+
+    O executável leva junto o Python e o Tk de quem o gera (o Tk 9 e o 8.6, por exemplo, tratam a
+    roda do mouse de jeitos diferentes). Com a mesma versão aqui e no GitHub Actions, o executável
+    gerado neste PC fica igual ao da Release.
+    """
+    import tkinter
+
+    fixada = ARQUIVO_VERSAO_PYTHON.read_text(encoding="utf-8").strip()
+    atual = platform.python_version()
+    print(f"Python {atual}, Tk {tkinter.TkVersion}")
+    if atual != fixada:
+        sys.exit(f"Este é o Python {atual}, mas o executável é gerado com o {fixada}, fixado em "
+                 f"{ARQUIVO_VERSAO_PYTHON.name} e usado também pelo GitHub Actions. Instale o Python "
+                 f"{fixada} ou, para mudar a versão também na Release, altere {ARQUIVO_VERSAO_PYTHON.name}.")
 
 
 def escrever_informacoes_de_versao():
@@ -115,6 +137,7 @@ if __name__ == "__main__":
         print(VERSAO)
         sys.exit()
     if opcoes.etapa in ("tudo", "executavel"):
+        conferir_versao_do_python()  # antes de apagar o executável anterior
         shutil.rmtree(PASTA_SAIDA / NOME_APLICATIVO, ignore_errors=True)
         escrever_informacoes_de_versao()
         gerar_executavel()

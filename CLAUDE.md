@@ -62,7 +62,11 @@ PDF Leve e substitua `PDF Leve.exe` e `_internal` pelos de `dist/PDF Leve/` (man
 - `iniciar.pyw` precisa do `if __name__ == "__main__"`: os processos de renderização (spawn)
   reimportam o arquivo principal.
 - Não versione PDFs reais de usuários (podem conter dados sensíveis); use PDFs gerados nos testes.
-- O executável da Release pode usar outro Tk que o gerado neste PC. A CI usa o Python 3.14 mais
-  recente, que traz o Tk 9; o Python 3.14.3 deste PC traz o Tk 8.6 (confira com
-  `python -c "import tkinter; print(tkinter.TkVersion)"`). Mudanças de mouse, teclado ou janelas
-  devem ser testadas também no executável da CI (fluxo “Release” manual, que gera um artefato).
+- **Versão do Python**: o executável leva junto o Python e o Tk de quem o gera (o Tk 9 e o 8.6, por
+  exemplo, tratam a roda do mouse de jeitos diferentes). Por isso a versão fica fixada em
+  `.python-version`, que o GitHub Actions lê; `gerar_executavel.py` para com um erro se o Python for
+  outro. Para mudar de versão: instale a nova neste PC, altere `.python-version`, rode os testes e
+  gere o executável. Os pacotes não são fixados: a CI instala as versões mais recentes, que podem ser
+  mais novas que as deste PC (confira com `pip list --outdated`). Mudanças que dependem do PyMuPDF
+  ou do pyHanko devem ser testadas também no executável da CI (fluxo “Release” manual, que gera um
+  artefato).
