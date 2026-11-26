@@ -1,6 +1,6 @@
 # Histórico de versões
 
-## [Não lançado]
+## [1.0.3] - 2026-11-26
 
 ### Adicionado
 - O mesmo PDF pode ser aberto em várias janelas, como no navegador: `Ctrl+Shift+N`, o novo botão
