@@ -1,6 +1,6 @@
 # Histórico de versões
 
-## [Não lançado]
+## [1.0.4] - 2026-11-26
 
 ### Corrigido
 - A roda do mouse não rolava o documento no programa baixado da Release quando o aparelho tinha
