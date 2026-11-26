@@ -57,7 +57,14 @@ class DocumentoAberto:
         self.cache_imagens = OrderedDict()   # chave -> PhotoImage (LRU)
         self.pixels_em_cache = 0
         self.em_renderizacao = set()      # chaves pedidas aos processos auxiliares
+        self.descartar_verificacao_assinaturas()
         self.renderizadores.enviar_a_todos(("abrir", self.id_documento, self.caminho, self.senha))
+
+    def descartar_verificacao_assinaturas(self):
+        """O arquivo em disco mudou: as assinaturas precisam ser verificadas de novo."""
+        self.assinaturas = None              # ResultadoAssinatura do arquivo em disco (None: não verificadas)
+        self.erro_assinaturas = None         # mensagem, se a verificação falhou
+        self.verificando_assinaturas = None  # marcador da verificação em andamento
 
     @property
     def renderizadores(self):
@@ -110,6 +117,9 @@ class DocumentoAberto:
             # os processos auxiliares relêem o arquivo, que agora contém as alterações
             self.renderizadores.enviar_a_todos(("abrir", self.id_documento, self.caminho, self.senha))
             self.paginas_locais.clear()
+            self.descartar_verificacao_assinaturas()
+            for janela in self.janelas:
+                janela.atualizar_faixa_assinaturas()
         else:
             ancoras = self._ancoras()
             temporario = self.caminho + ".tmp"

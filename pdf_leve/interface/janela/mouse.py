@@ -26,6 +26,9 @@ class MixinMouse:
         if not self.documento:
             self.abrir_arquivo()
             return
+        if self.posicionando_selo is not None:
+            self.iniciar_selo(evento)
+            return
         x, y = self._posicao_na_tela(evento)
         anotacao = self.anotacao_no_ponto(x, y)
         if anotacao:
@@ -51,7 +54,9 @@ class MixinMouse:
         self._iniciar_movimento_pagina(evento)
 
     def _ao_arrastar(self, evento):
-        if self.arraste:
+        if self.posicionando_selo is not None:
+            self.arrastar_selo(evento)
+        elif self.arraste:
             self._arrastar_anotacao(evento)
         elif self.selecionando:
             self._arrastar_selecao(evento)
@@ -83,6 +88,9 @@ class MixinMouse:
             self.desenhar_sobreposicoes()
 
     def _ao_soltar_botao(self, evento):
+        if self.posicionando_selo is not None:
+            self.concluir_selo(evento)
+            return
         if self.arraste and self.arraste["moveu"] and self.anotacao_selecionada:
             self._concluir_movimento_anotacao(evento)
         self.arraste = None
@@ -131,6 +139,8 @@ class MixinMouse:
             cursor = "hand2"
         elif self.movendo_pagina:
             return
+        elif self.posicionando_selo is not None:
+            cursor = "crosshair"
         else:
             x, y = self._posicao_na_tela(evento)
             local = self.ponto_na_pagina(x, y)
@@ -193,12 +203,17 @@ class MixinMouse:
         if menu.index("end") is not None and menu.type("end") != "separator":
             menu.add_separator()
         menu.add_command(label="Abrir em nova janela", accelerator="Ctrl+Shift+N", command=self.abrir_em_nova_janela)
+        menu.add_command(label="Assinar digitalmente…", accelerator="Ctrl+Shift+A", command=self.assinar)
+        if self.aberto.assinaturas or self.aberto.erro_assinaturas:
+            menu.add_command(label="Ver assinaturas…", command=self.mostrar_assinaturas)
         menu.tk_popup(evento.x_root, evento.y_root)
 
     # ------------------------------------------------------------------ teclado
     def _ao_pressionar_esc(self):
-        """Esc desfaz, em ordem: seleção → modo texto → tela cheia → busca."""
-        if self.anotacao_selecionada or self.selecao_texto:
+        """Esc desfaz, em ordem: posicionamento da assinatura → seleção → modo texto → tela cheia → busca."""
+        if self.posicionando_selo is not None:
+            self.cancelar_posicionamento_selo()
+        elif self.anotacao_selecionada or self.selecao_texto:
             self.anotacao_selecionada = self.selecao_texto = None
             self.desenhar_sobreposicoes()
         elif self.modo_texto:

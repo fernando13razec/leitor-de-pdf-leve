@@ -1,7 +1,9 @@
 """Pequenas funções auxiliares da interface."""
 
 import base64
+import queue
 import struct
+import threading
 import tkinter as tk
 import zlib
 
@@ -24,6 +26,36 @@ def trazer_para_frente(janela):
     janela.attributes("-topmost", True)
     janela.after(200, lambda: janela.attributes("-topmost", False))
     janela.focus_force()
+
+
+def executar_em_segundo_plano(widget, tarefa, ao_concluir, intervalo_ms):
+    """Roda `tarefa()` numa thread e chama `ao_concluir(resultado, erro)` no laço do Tk.
+
+    A thread não toca no tkinter: o resultado volta por uma fila, lida com `after` a cada
+    `intervalo_ms`. Se `widget` for destruído antes, o resultado é descartado."""
+    fila = queue.Queue(maxsize=1)
+
+    def executar():
+        try:
+            fila.put((tarefa(), None))
+        except Exception as erro:
+            fila.put((None, erro))
+
+    def verificar():
+        try:
+            resultado, erro = fila.get_nowait()
+        except queue.Empty:
+            widget.after(intervalo_ms, verificar)
+            return
+        try:
+            existe = widget.winfo_exists()
+        except tk.TclError:
+            existe = False
+        if existe:
+            ao_concluir(resultado, erro)
+
+    threading.Thread(target=executar, daemon=True).start()
+    widget.after(intervalo_ms, verificar)
 
 
 def imagem_cor_solida(largura, altura, rgba):

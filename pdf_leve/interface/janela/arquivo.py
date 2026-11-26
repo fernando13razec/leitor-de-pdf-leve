@@ -63,6 +63,7 @@ class MixinArquivo:
             self.tela.xview_moveto(0)
             self.ir_para_pagina(0)
         self.atualizar_titulo()
+        self.atualizar_faixa_assinaturas()
         self.tela.focus_set()
 
     def abrir_em_nova_janela(self):
@@ -78,6 +79,8 @@ class MixinArquivo:
     def salvar(self):
         """Salva o documento (vale para todas as janelas que o exibem)."""
         if not self.documento:
+            return False
+        if self.modificado and not self.confirmar_salvar_assinado():
             return False
         try:
             self.aberto.salvar()

@@ -9,6 +9,7 @@
     anotacoes.py          criar, editar, mover e excluir anotações; cor e tamanho
     busca.py              busca de texto em segundo plano
     impressao.py          impressão (diálogo do Windows e processo de impressão)
+    assinatura.py         assinatura digital com o token e faixa de verificação das assinaturas
 """
 
 from pdf_leve.interface.janela.janela_pdf import JanelaPdf

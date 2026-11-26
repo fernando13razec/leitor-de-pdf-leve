@@ -67,7 +67,7 @@ class Aplicativo(tk.Tk):
             return
         for caminho in caminhos:
             caminho = os.path.abspath(caminho)
-            aberto = self._documento_do_arquivo(caminho)
+            aberto = self.documento_do_arquivo(caminho)
             if origem is not None and not origem.fechada and origem.documento is None:
                 if aberto:
                     origem.exibir(aberto)
@@ -79,7 +79,8 @@ class Aplicativo(tk.Tk):
                 janela = self.nova_janela(None if aberto else caminho, perto_de=vizinha, aberto=aberto)
             trazer_para_frente(janela)
 
-    def _documento_do_arquivo(self, caminho):
+    def documento_do_arquivo(self, caminho):
+        """DocumentoAberto do arquivo `caminho` (se estiver aberto em alguma janela), ou None."""
         normalizado = os.path.normcase(caminho)
         return next((janela.aberto for janela in self.janelas
                      if janela.caminho and os.path.normcase(janela.caminho) == normalizado), None)

@@ -39,6 +39,9 @@ ZIP_SAIDA = PASTA_SAIDA / f"PDF-Leve-{VERSAO}-windows-x64.zip"
 # (centenas de MB); por isso ele e os demais ficam de fora.
 MODULOS_EXCLUIDOS = ["PIL", "pandas", "fontTools", "numpy", "pytest", "unittest", "pydoc", "test", "lib2to3",
                      "pymupdf.mupdf_cppyy"]
+# O pyHanko (assinatura digital) importa partes sob demanda (ex.: cliente HTTP do carimbo de tempo),
+# que a análise automática do PyInstaller não enxerga.
+PACOTES_COMPLETOS = ["pyhanko", "pyhanko_certvalidator"]
 
 
 def escrever_informacoes_de_versao():
@@ -81,6 +84,8 @@ def gerar_executavel():
     ]
     for modulo in MODULOS_EXCLUIDOS:
         argumentos += ["--exclude-module", modulo]
+    for pacote in PACOTES_COMPLETOS:
+        argumentos += ["--collect-submodules", pacote, "--collect-data", pacote]
     PyInstaller.__main__.run(argumentos)
 
 

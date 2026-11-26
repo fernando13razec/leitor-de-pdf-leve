@@ -30,6 +30,8 @@ páginas escaneadas — abrindo rápido e sem travar a tela.
   separados por ponto e vírgula (`multa; prazo de entrega`), cada um destacado com uma cor.
 - **Salvar páginas em PDF** (todas, a atual ou intervalos como `1-5, 8, 11-13`).
 - **Impressão** pelo diálogo padrão do Windows, com as anotações ainda não salvas.
+- **Assinatura digital** com certificado A3 em token (ICP-Brasil: e-CPF, e-CNPJ, OAB…), no padrão
+  PAdES, com selo visível e carimbo de tempo; e **verificação** das assinaturas dos PDFs abertos.
 - **Girar páginas**, **tela cheia**, **página inteira** / **ajuste à largura**.
 - **Arrastar e soltar** arquivos na janela.
 - Tema escuro, interface minimalista, barra de título escura no Windows 10/11.
@@ -51,8 +53,9 @@ e marque **Sempre**. Cada PDF abrirá em uma nova janela do programa.
 
 ## Executar a partir do código-fonte
 
-Requisitos: Windows 10 ou 11, Python 3.10 ou superior (testado com 3.14) e
-[PyMuPDF](https://pymupdf.readthedocs.io/) — a interface usa o `tkinter`, que já vem com o Python.
+Requisitos: Windows 10 ou 11, Python 3.10 ou superior (testado com 3.14),
+[PyMuPDF](https://pymupdf.readthedocs.io/) e [pyHanko](https://pyhanko.readthedocs.io/) (assinatura
+digital) — a interface usa o `tkinter`, que já vem com o Python.
 
 ```bash
 git clone https://github.com/fernando13razec/leitor-de-pdf-leve.git
@@ -79,6 +82,7 @@ Também é possível executar como módulo: `python -m pdf_leve arquivo.pdf`.
 | `Ctrl+S` / `Ctrl+Shift+S` | Salvar / salvar como |
 | `Ctrl+P` | Salvar páginas em um novo PDF |
 | `Ctrl+Shift+P` | Imprimir |
+| `Ctrl+Shift+A` | Assinar digitalmente (arraste na página para posicionar o selo) |
 | `→` / `←` | Próxima / página anterior |
 | `↓` / `↑`, `PageDown` / `PageUp` | Rolar |
 | `Home` / `End` | Primeira / última página |
@@ -92,7 +96,7 @@ Também é possível executar como módulo: `python -m pdf_leve arquivo.pdf`.
 | Botão do meio + arrastar | Mover a página |
 | `Ctrl+F`, `Enter` / `Shift+Enter` | Buscar, próximo / anterior |
 | `F11` | Tela cheia |
-| `Esc` | Desfazer seleção → sair do modo texto → sair da tela cheia → limpar busca |
+| `Esc` | Cancelar a assinatura → desfazer seleção → sair do modo texto → sair da tela cheia → limpar busca |
 
 ## Desenvolvimento
 

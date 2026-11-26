@@ -9,6 +9,7 @@ from pdf_leve.configuracao.constantes import (
 from pdf_leve.configuracao.tema import COR_FUNDO
 from pdf_leve.interface.janela.anotacoes import MixinAnotacoes
 from pdf_leve.interface.janela.arquivo import MixinArquivo
+from pdf_leve.interface.janela.assinatura import MixinAssinatura
 from pdf_leve.interface.janela.barra_ferramentas import MixinBarraFerramentas
 from pdf_leve.interface.janela.busca import MixinBusca
 from pdf_leve.interface.janela.impressao import MixinImpressao
@@ -21,7 +22,7 @@ DESLOCAMENTO_CASCATA = 32  # px entre janelas abertas em sequência
 
 
 class JanelaPdf(MixinBarraFerramentas, MixinArquivo, MixinVisualizacao, MixinMouse,
-                MixinSelecaoTexto, MixinAnotacoes, MixinBusca, MixinImpressao, tk.Toplevel):
+                MixinSelecaoTexto, MixinAnotacoes, MixinBusca, MixinImpressao, MixinAssinatura, tk.Toplevel):
 
     def __init__(self, aplicativo, caminho=None, perto_de=None, aberto=None, ancora=None):
         """Abre `caminho` ou, com `aberto`, mais uma vista de um documento já aberto (em `ancora`)."""
@@ -37,6 +38,7 @@ class JanelaPdf(MixinBarraFerramentas, MixinArquivo, MixinVisualizacao, MixinMou
         # documento (compartilhado com as outras janelas que exibem o mesmo arquivo)
         self.aberto = None                # DocumentoAberto
         self.impressao = None             # (conexão, processo) da impressão em andamento nesta janela
+        self.assinando = False            # assinatura em andamento (esperando o PIN ou gravando)
 
         # visualização e renderização
         self.zoom = self.preferencias.get("zoom", 1.0)
@@ -60,6 +62,7 @@ class JanelaPdf(MixinBarraFerramentas, MixinArquivo, MixinVisualizacao, MixinMou
         self.arraste = None               # anotação sendo movida
         self.movendo_pagina = False
         self.painel_estilo = None
+        self.posicionando_selo = None     # dict enquanto o usuário desenha o retângulo da assinatura
         self.selecao_texto = None         # ((página, palavra), (página, palavra))
         self.selecionando = None
         self._imagens_selecao = {}

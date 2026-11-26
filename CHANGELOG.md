@@ -13,6 +13,15 @@
   está na tela, inclusive com anotações e rotações ainda não salvas. As páginas são centralizadas
   no papel, reduzidas quando não cabem e giradas quando a orientação difere da do papel. A
   impressão roda em segundo plano, com o progresso no rodapé.
+- Assinatura digital com certificado ICP-Brasil A3 em token (`Ctrl+Shift+A` ou botão da caneta):
+  arraste na página para posicionar o selo, escolha o certificado e digite o PIN na janela do
+  Windows. Gera uma cópia `_assinado.pdf` no padrão PAdES (a mesma assinatura do Acrobat), com
+  carimbo de tempo opcional. O token é usado pelo repositório de certificados do Windows, sem
+  depender do programa do fabricante.
+- Verificação das assinaturas ao abrir um PDF assinado: uma faixa abaixo da barra informa se as
+  assinaturas são válidas, se o certificado é de uma autoridade confiável e se o documento foi
+  alterado depois de assinado; “Ver assinaturas” mostra os detalhes de cada uma.
+- Aviso ao salvar alterações num PDF assinado (as assinaturas passariam a acusar a alteração).
 
 ### Alterado
 - O botão “Salvar páginas em PDF” (`Ctrl+P`) ganhou ícone próprio; o de impressora agora imprime.

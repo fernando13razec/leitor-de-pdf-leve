@@ -51,6 +51,8 @@ class MixinBarraFerramentas:
         self.botao_salvar.pack(side="left")
         BotaoIcone(barra, "exportar", self.exportar_paginas, "Salvar páginas em PDF (Ctrl+P)").pack(side="left")
         BotaoIcone(barra, "imprimir", self.imprimir, "Imprimir (Ctrl+Shift+P)").pack(side="left")
+        BotaoIcone(barra, "assinar", self.assinar, "Assinar digitalmente com certificado (Ctrl+Shift+A)").pack(
+            side="left")
         divisoria()
 
         # navegação
@@ -102,6 +104,7 @@ class MixinBarraFerramentas:
 
         self._montar_busca(barra)
         self._montar_area_paginas()
+        self._montar_faixa_assinaturas()
         self.atualizar_botao_cor()
         self.atualizar_botoes()
 
@@ -201,6 +204,7 @@ class MixinBarraFerramentas:
         self.bind("<Control-S>", lambda e: self.salvar_como())
         self.bind("<Control-p>", lambda e: self.exportar_paginas())
         self.bind("<Control-P>", lambda e: self.imprimir())
+        self.bind("<Control-A>", lambda e: self.assinar())
         self.bind("<Control-f>", lambda e: self.focar_busca())
         self.bind("<Control-plus>", lambda e: self.definir_zoom(self.zoom * PASSO_ZOOM))
         self.bind("<Control-equal>", lambda e: self.definir_zoom(self.zoom * PASSO_ZOOM))
@@ -279,8 +283,9 @@ class MixinBarraFerramentas:
 
     def _mostrar_barra(self):
         if not self.barra.winfo_ismapped():
-            self.barra.pack(side="top", fill="x", before=self.area)
-            self.linha_barra.pack(side="top", fill="x", before=self.area)
+            antes = self.faixa_assinaturas if self.faixa_assinaturas.winfo_ismapped() else self.area
+            self.barra.pack(side="top", fill="x", before=antes)
+            self.linha_barra.pack(side="top", fill="x", before=antes)
 
     def _esconder_barra(self):
         self.barra.pack_forget()

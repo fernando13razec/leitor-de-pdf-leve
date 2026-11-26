@@ -42,6 +42,9 @@ class VistaFalsa:
     def atualizar_titulo(self):
         self.chamadas.append("titulo")
 
+    def atualizar_faixa_assinaturas(self):
+        self.chamadas.append("faixa_assinaturas")
+
     def agendar_renderizacao(self):
         self.chamadas.append("renderizar")
 

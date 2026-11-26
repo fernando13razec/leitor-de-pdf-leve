@@ -40,6 +40,17 @@ DPI_MAXIMO_IMPRESSAO = 300                # resolução das imagens das páginas
 MAXIMO_INTERVALOS_IMPRESSAO = 16          # intervalos de páginas aceitos no diálogo de impressão
 INTERVALO_VERIFICACAO_IMPRESSAO_MS = 200  # leitura do progresso enviado pelo processo de impressão
 
+# ------------------------------------------------------------------ assinatura digital
+URL_CARIMBO_TEMPO_PADRAO = "http://timestamp.digicert.com"  # servidor RFC 3161 gratuito (PAdES-B-T)
+TEMPO_LIMITE_CARIMBO_TEMPO_S = 15        # espera máxima pela resposta do servidor de carimbo de tempo
+ALGORITMO_HASH_ASSINATURA = "sha256"
+PREFIXO_CAMPO_ASSINATURA = "Assinatura"  # campos novos: Assinatura1, Assinatura2…
+SUFIXO_ARQUIVO_ASSINADO = "_assinado"    # “contrato.pdf” → “contrato_assinado.pdf”
+TAMANHO_FONTE_SELO = 8                   # pt do texto do selo visível
+TAMANHO_MINIMO_SELO = (60, 24)           # pt (largura, altura) do retângulo do selo
+TAMANHO_PADRAO_SELO = (200, 60)          # pt, quando o usuário só clica (sem arrastar)
+INTERVALO_VERIFICACAO_ASSINATURA_MS = 150  # leitura dos resultados das tarefas em segundo plano
+
 # ------------------------------------------------------------------ anotações
 FONTE_ANOTACAO = "helv"  # Helvetica padrão do PDF (cobre o português)
 CORES_ANOTACAO = {

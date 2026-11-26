@@ -16,6 +16,8 @@ COR_DESTAQUE = "#7aa2f7"
 COR_DESTAQUE_CLARO = "#99b8fa"
 COR_TEXTO_SOBRE_DESTAQUE = "#10131a"
 COR_PERIGO = "#f28b82"
+COR_SUCESSO = "#81c995"
+COR_ALERTA = "#fdd663"
 COR_AVISO = "#3a3c42"             # fundo dos avisos flutuantes e dicas
 COR_BOTAO_SECUNDARIO_ATIVO = "#42444a"
 COR_BORDA_CIRCULO = "#5a5c63"
@@ -35,6 +37,8 @@ COR_CONTORNO_ANOTACAO = "#1e88e5"
 COR_SELECAO_TEXTO_RGBA = (51, 136, 255, 80)  # azul translúcido
 COR_FUNDO_EDITOR_ANOTACAO = "#ffffff"
 COR_SELECAO_EDITOR_ANOTACAO = "#c6d6fb"
+COR_CONTORNO_SELO = "#1e88e5"     # retângulo desenhado ao posicionar a assinatura
+COR_FAIXA_ASSINATURAS = "#2b2d33"  # faixa “documento assinado” abaixo da barra
 
 
 # ------------------------------------------------------------------ fontes
@@ -75,6 +79,11 @@ GLIFOS = {
     "salvar": ("\uE74E", "Salvar"),
     "exportar": ("\uE792", "Páginas"),
     "imprimir": ("\uE749", "Imprimir"),
+    "assinar": ("\uEE56", "Assinar"),
+    "certificado": ("\uEB95", "\u25A3"),
+    "assinatura_valida": ("\uE930", "\u2713"),
+    "assinatura_alerta": ("\uE7BA", "!"),
+    "assinatura_invalida": ("\uEA39", "\u00D7"),
     "anterior": ("\uE76B", "‹"),
     "proxima": ("\uE76C", "›"),
     "diminuir_zoom": ("\uE71F", "−"),

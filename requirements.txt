@@ -1,1 +1,2 @@
 pymupdf>=1.24.3
+pyhanko>=0.38
